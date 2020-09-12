@@ -26,6 +26,7 @@ export default class GameManager {
 
         this.inputManager.on('move', this.move.bind(this));
         this.inputManager.on('restart', this.restart.bind(this));
+        this.inputManager.on('restartWithConfirmation', this.restartWithConfirmation.bind(this));
         this.inputManager.on('keepPlaying', this.keepPlaying.bind(this));
 
         this.setup();
@@ -40,6 +41,10 @@ export default class GameManager {
         this.actuator.continueGame(); // Clear the game won/lost message
         this.setup();
         this.begin();
+    }
+
+    restartWithConfirmation() {
+        this.actuator.promptRestart();
     }
 
     keepPlaying() {

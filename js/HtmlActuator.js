@@ -23,19 +23,19 @@ export default class HtmlActuator {
         this.scoreContainer = document.querySelector('.score-container');
         this.bestContainer = document.querySelector('.best-container');
         this.messageContainer = document.querySelector('.game-message');
-        this.gridContainer    = document.querySelector('.grid-container');
+        this.gridContainer = document.querySelector('.grid-container');
 
         this.score = 0;
     }
 
     buildHTMLGrid(size) {
-        for (let y = 0; y < size; y++) {
-            let row = document.createElement('div');
+        for (let y = 0; y < size; y += 1) {
+            const row = document.createElement('div');
 
             row.className = 'grid-row';
 
-            for (let x = 0; x < size; x++) {
-                let cell = document.createElement('div');
+            for (let x = 0; x < size; x += 1) {
+                const cell = document.createElement('div');
 
                 cell.className = 'grid-cell';
 
@@ -44,7 +44,7 @@ export default class HtmlActuator {
 
             this.gridContainer.appendChild(row);
         }
-    };
+    }
 
     actuate(grid, metadata) {
         const self = this;
@@ -155,9 +155,17 @@ export default class HtmlActuator {
         this.messageContainer.getElementsByTagName('p')[0].textContent = message;
     }
 
+    promptRestart() {
+        const message = 'Start a new game?';
+
+        this.messageContainer.classList.add('restart-game');
+        this.messageContainer.getElementsByTagName('p')[0].textContent = message;
+    }
+
     clearMessage() {
         // IE only takes one value to remove at a time.
         this.messageContainer.classList.remove('game-won');
         this.messageContainer.classList.remove('game-over');
+        this.messageContainer.classList.remove('restart-game');
     }
 }

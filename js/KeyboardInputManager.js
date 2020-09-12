@@ -31,14 +31,14 @@ export default class KeyboardInputManager {
         const self = this;
 
         const map = {
-            'ArrowUp': 0,
-            'ArrowRight': 1,
-            'ArrowDown': 2,
-            'ArrowLeft': 3,
-            'KeyW': 0,
-            'KeyD': 1,
-            'KeyS': 2,
-            'KeyA': 3,
+            ArrowUp: 0,
+            ArrowRight: 1,
+            ArrowDown: 2,
+            ArrowLeft: 3,
+            KeyW: 0,
+            KeyD: 1,
+            KeyS: 2,
+            KeyA: 3,
         };
 
         // Respond to direction keys
@@ -61,8 +61,10 @@ export default class KeyboardInputManager {
 
         // Respond to button presses
         this.bindButtonPress('.retry-button', this.restart);
-        this.bindButtonPress('.restart-button', this.restart);
         this.bindButtonPress('.keep-playing-button', this.keepPlaying);
+        this.bindButtonPress('.restart-button', this.restartWithConfirmation);
+        this.bindButtonPress('.confirm-button', this.restart);
+        this.bindButtonPress('.cancel-button', this.keepPlaying);
 
         // Respond to swipe events
         let touchStartClientX;
@@ -123,6 +125,11 @@ export default class KeyboardInputManager {
     restart(event) {
         event.preventDefault();
         this.emit('restart');
+    }
+
+    restartWithConfirmation(event) {
+        event.preventDefault();
+        this.emit('restartWithConfirmation');
     }
 
     keepPlaying(event) {

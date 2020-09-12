@@ -272,6 +272,8 @@ hr {
       @include button;
       margin-left: 9px;
 
+      &.confirm-button,
+      &.cancel-button,
       &.keep-playing-button {
         display: none;
       }
@@ -289,8 +291,25 @@ hr {
       }
     }
 
-    &.game-won, &.game-over {
+    &.game-won, &.game-over, &.restart-game {
       display: block;
+    }
+
+    &.restart-game {
+      animation: fade-in 400ms ease $transition-speed;
+      animation-fill-mode: both;
+
+      .lower {
+        margin-top: 85px;
+
+        a.confirm-button, a.cancel-button {
+          display: inline-block;
+        }
+
+        a.retry-button {
+          display: none;
+        }
+      }
     }
   }
 }
