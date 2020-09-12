@@ -1,0 +1,18 @@
+{
+    "name": "{{ constants.siteName }}",
+    "short_name": "{{ constants.siteName }}",
+    "icons": [
+        {
+            "src": "/{{ constants.androidIconPrefix }}-192x192{{ constants.pngExtension}}?v={{ constants.gitRevision() }}",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/{{ constants.androidIconPrefix }}-512x512.png?v={{ constants.gitRevision() }}",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "theme_color": "{{ constants.themeColor }}",
+    "background_color": "{{ constants.themeColor }}"
+}

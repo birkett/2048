@@ -1,28 +1,25 @@
 {
   "name": "2048",
   "version": "1.0.0",
-  "description": "A small clone of [1024](https://play.google.com/store/apps/details?id=com.veewo.a1024), based on [Saming's 2048](http://saming.fr/p/2048/) (also a clone).",
-  "main": "index.js",
-  "dependencies": {},
+  "description": "A sliding number tile game",
+  "private": true,
+  "dependencies": {
+    "icon-gen": "^2.0.0",
+    "nunjucks": "^3.2.2",
+    "sass": "^1.26.10"
+  },
   "devDependencies": {
     "eslint": "^7.8.1",
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-plugin-import": "^2.22.0",
-    "node-sass": "^4.14.1"
+    "typescript": "^4.0.2"
   },
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "css": "node-sass --output-style compressed style/main.scss style/main.css"
+    "build": "set -e && node build.js && tsc",
+    "test": "node tests.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/gabrielecirulli/2048.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/gabrielecirulli/2048/issues"
-  },
-  "homepage": "https://github.com/gabrielecirulli/2048#readme"
+  "author": "Anthony Birkett",
+  "license": "MIT"
 }
