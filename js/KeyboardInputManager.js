@@ -57,6 +57,10 @@ export default class KeyboardInputManager {
             if (!modifiers && event.code === 'KeyR') {
                 self.restart.call(self, event);
             }
+
+            if (event.code === 'KeyZ' && (event.ctrlKey || event.metaKey)) {
+                self.undo.call(self, event);
+            }
         });
 
         // Respond to button presses
@@ -125,6 +129,11 @@ export default class KeyboardInputManager {
     restart(event) {
         event.preventDefault();
         this.emit('restart');
+    }
+
+    undo(event) {
+        event.preventDefault();
+        this.emit('undo');
     }
 
     restartWithConfirmation(event) {

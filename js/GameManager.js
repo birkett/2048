@@ -24,10 +24,14 @@ export default class GameManager {
 
         this.startTiles = 2;
 
+        this.undoLimit = 5;
+        this.stateHistory = [];
+
         this.inputManager.on('move', this.move.bind(this));
         this.inputManager.on('restart', this.restart.bind(this));
         this.inputManager.on('restartWithConfirmation', this.restartWithConfirmation.bind(this));
         this.inputManager.on('keepPlaying', this.keepPlaying.bind(this));
+        this.inputManager.on('undo', this.undo.bind(this));
 
         this.setup();
     }
@@ -52,6 +56,18 @@ export default class GameManager {
         this.actuator.continueGame(); // Clear the game won/lost message
     }
 
+    undo() {
+        if (!this.stateHistory || !this.stateHistory.length) {
+            return;
+        }
+
+        const targetState = this.stateHistory.splice(this.stateHistory.length - 1, 1)[0];
+
+        this.loadFromPreviousState(targetState);
+
+        this.actuate();
+    }
+
     isGameTerminated() {
         return this.over || (this.won && !this.keepPlaying);
     }
@@ -63,24 +79,31 @@ export default class GameManager {
 
         // Reload the game from a previous game if present
         if (previousState) {
-            this.grid = new Grid(previousState.grid.size,
-                previousState.grid.cells); // Reload grid
-            this.moves = previousState.moves;
-            this.score = previousState.score;
-            this.over = previousState.over;
-            this.won = previousState.won;
-            this.keepPlaying = previousState.keepPlaying;
+            this.loadFromPreviousState(previousState);
         } else {
-            this.grid = new Grid(this.size);
-            this.moves = -1;
-            this.score = 0;
-            this.over = false;
-            this.won = false;
-            this.keepPlaying = false;
-
-            // Add the initial tiles
-            this.addStartTiles();
+            this.createNewState();
         }
+    }
+
+    createNewState() {
+        this.grid = new Grid(this.size);
+        this.moves = -1;
+        this.score = 0;
+        this.over = false;
+        this.won = false;
+        this.keepPlaying = false;
+
+        // Add the initial tiles
+        this.addStartTiles();
+    }
+
+    loadFromPreviousState(previousState) {
+        this.grid = new Grid(previousState.grid.size, previousState.grid.cells); // Reload grid
+        this.moves = previousState.moves;
+        this.score = previousState.score;
+        this.over = previousState.over;
+        this.won = previousState.won;
+        this.keepPlaying = previousState.keepPlaying;
     }
 
     addStartTiles() {
@@ -159,6 +182,8 @@ export default class GameManager {
         const traversals = this.buildTraversals(vector);
         let moved = false;
 
+        const currentState = this.storageManager.getGameState();
+
         // Save the current tile positions and remove merger information
         this.prepareTiles();
 
@@ -200,6 +225,15 @@ export default class GameManager {
         });
 
         if (moved) {
+            if (this.stateHistory.length === this.undoLimit) {
+                this.stateHistory.splice(0, 1);
+                this.stateHistory = this.stateHistory.filter(Boolean);
+            }
+
+            if (this.stateHistory.length < this.undoLimit) {
+                this.stateHistory.push(currentState);
+            }
+
             this.addRandomTile();
 
             if (!this.movesAvailable()) {
