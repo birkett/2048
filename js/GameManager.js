@@ -1,23 +1,20 @@
 import Grid from './Grid.js';
 import Tile from './Tile.js';
 
-const getVector = (direction) => {
-    // Vectors representing tile movement
-    const map = {
-        0: { x: 0, y: -1 }, // Up
-        1: { x: 1, y: 0 }, // Right
-        2: { x: 0, y: 1 }, // Down
-        3: { x: -1, y: 0 }, // Left
-    };
-
-    return map[direction];
+const VECTOR_MAP = {
+    Up: { x: 0, y: -1 },
+    Right: { x: 1, y: 0 },
+    Down: { x: 0, y: 1 },
+    Left: { x: -1, y: 0 },
 };
+
+const getVector = (direction) => VECTOR_MAP[direction];
 
 const positionsEqual = (first, second) => first.x === second.x && first.y === second.y;
 
 export default class GameManager {
     constructor(size, InputManager, Actuator, StorageManager) {
-        this.size = size; // Size of the grid
+        this.size = size;
         this.inputManager = new InputManager();
         this.storageManager = new StorageManager();
         this.actuator = new Actuator();
@@ -45,7 +42,7 @@ export default class GameManager {
 
     restart() {
         this.storageManager.clearGameState();
-        this.actuator.continueGame(); // Clear the game won/lost message
+        this.actuator.continueGame();
         this.setup();
         this.begin();
     }
@@ -56,12 +53,16 @@ export default class GameManager {
 
     keepPlaying() {
         this.keepPlaying = true;
-        this.actuator.continueGame(); // Clear the game won/lost message
+        this.actuator.continueGame();
     }
 
     undo() {
         if (!this.stateHistory || !this.stateHistory.length) {
             return;
+        }
+
+        if (this.over) {
+            this.actuator.continueGame();
         }
 
         const targetState = this.stateHistory.splice(this.stateHistory.length - 1, 1)[0];
@@ -96,12 +97,11 @@ export default class GameManager {
         this.won = false;
         this.keepPlaying = false;
 
-        // Add the initial tiles
         this.addStartTiles();
     }
 
     loadFromPreviousState(previousState) {
-        this.grid = new Grid(previousState.grid.size, previousState.grid.cells); // Reload grid
+        this.grid = new Grid(previousState.grid.size, previousState.grid.cells);
         this.moves = previousState.moves;
         this.score = previousState.score;
         this.over = previousState.over;
@@ -116,12 +116,14 @@ export default class GameManager {
     }
 
     addRandomTile() {
-        if (this.grid.cellsAvailable()) {
-            const value = Math.random() < 0.9 ? 2 : 4;
-            const tile = new Tile(this.grid.randomAvailableCell(), value);
-
-            this.grid.insertTile(tile);
+        if (!this.grid.cellsAvailable()) {
+            return;
         }
+
+        const value = Math.random() < 0.9 ? 2 : 4;
+        const tile = new Tile(this.grid.randomAvailableCell(), value);
+
+        this.grid.insertTile(tile);
     }
 
     actuate() {
@@ -129,7 +131,6 @@ export default class GameManager {
             this.storageManager.setBestScore(this.score);
         }
 
-        // Clear the state when the game is over (game over only, not win)
         if (this.over) {
             this.storageManager.clearGameState();
         } else {
@@ -159,27 +160,31 @@ export default class GameManager {
 
     prepareTiles() {
         this.grid.eachCell((x, y, tile) => {
-            if (tile) {
-                tile.setMergedFrom(null);
-                tile.savePosition();
+            if (!tile) {
+                return;
             }
+
+            tile.setMergedFrom(null);
+            tile.savePosition();
         });
     }
 
     moveTile(tile, cell) {
         this.grid.cells[tile.x][tile.y] = null;
         this.grid.cells[cell.x][cell.y] = tile;
+
         tile.updatePosition(cell);
     }
 
     move(direction) {
-    // 0: up, 1: right, 2: down, 3: left
         const self = this;
 
-        if (this.isGameTerminated()) return; // Don't do anything if the game's over
+        if (this.isGameTerminated()) {
+            return;
+        }
 
-        let cell; let
-            tile;
+        let cell;
+        let tile;
 
         const vector = getVector(direction);
         const traversals = this.buildTraversals(vector);
@@ -196,55 +201,55 @@ export default class GameManager {
                 cell = { x, y };
                 tile = self.grid.cellContent(cell);
 
-                if (tile) {
-                    const positions = self.findFarthestPosition(cell, vector);
-                    const next = self.grid.cellContent(positions.next);
+                if (!tile) {
+                    return;
+                }
 
-                    // Only one merger per row traversal?
-                    if (next && next.value === tile.value && !next.mergedFrom) {
-                        const merged = new Tile(positions.next, tile.value * 2);
-                        merged.mergedFrom = [tile, next];
+                const positions = self.findFarthestPosition(cell, vector);
+                const next = self.grid.cellContent(positions.next);
 
-                        self.grid.insertTile(merged);
-                        self.grid.removeTile(tile);
+                // Only one merger per row traversal?
+                if (next && next.value === tile.value && !next.mergedFrom) {
+                    const merged = new Tile(positions.next, tile.value * 2);
+                    merged.mergedFrom = [tile, next];
 
-                        // Converge the two tiles' positions
-                        tile.updatePosition(positions.next);
+                    self.grid.insertTile(merged);
+                    self.grid.removeTile(tile);
 
-                        // Update the score
-                        self.score += merged.value;
+                    tile.updatePosition(positions.next);
 
-                        // The mighty 2048 tile
-                        if (merged.value === 2048) self.won = true;
-                    } else {
-                        self.moveTile(tile, positions.farthest);
-                    }
+                    self.score += merged.value;
 
-                    if (!positionsEqual(cell, tile)) {
-                        moved = true; // The tile moved from its original cell!
-                    }
+                    // The mighty 2048 tile
+                    self.won = merged.value === 2048;
+                } else {
+                    self.moveTile(tile, positions.farthest);
+                }
+
+                if (!positionsEqual(cell, tile)) {
+                    moved = true;
                 }
             });
         });
 
-        if (moved) {
-            if (this.stateHistory.length === this.undoLimit) {
-                this.stateHistory.splice(0, 1);
-                this.stateHistory = this.stateHistory.filter(Boolean);
-            }
-
-            if (this.stateHistory.length < this.undoLimit) {
-                this.stateHistory.push(currentState);
-            }
-
-            this.addRandomTile();
-
-            if (!this.movesAvailable()) {
-                this.over = true; // Game over!
-            }
-
-            this.actuate();
+        if (!moved) {
+            return;
         }
+
+        if (this.stateHistory.length === this.undoLimit) {
+            this.stateHistory.splice(0, 1);
+            this.stateHistory = this.stateHistory.filter(Boolean);
+        }
+
+        if (this.stateHistory.length < this.undoLimit) {
+            this.stateHistory.push(currentState);
+        }
+
+        this.addRandomTile();
+
+        this.over = !this.movesAvailable(); // Game over!
+
+        this.actuate();
     }
 
     rotate(n) {
@@ -286,8 +291,13 @@ export default class GameManager {
         }
 
         // Always traverse from the farthest cell in the chosen direction
-        if (vector.x === 1) traversals.x = traversals.x.reverse();
-        if (vector.y === 1) traversals.y = traversals.y.reverse();
+        if (vector.x === 1) {
+            traversals.x = traversals.x.reverse();
+        }
+
+        if (vector.y === 1) {
+            traversals.y = traversals.y.reverse();
+        }
 
         return traversals;
     }
@@ -299,8 +309,7 @@ export default class GameManager {
         do {
             previous = cell;
             cell = { x: previous.x + vector.x, y: previous.y + vector.y };
-        } while (this.grid.withinBounds(cell)
-    && this.grid.cellAvailable(cell));
+        } while (this.grid.withinBounds(cell) && this.grid.cellAvailable(cell));
 
         return {
             farthest: previous,
@@ -321,16 +330,20 @@ export default class GameManager {
             for (let y = 0; y < this.size; y += 1) {
                 tile = this.grid.cellContent({ x, y });
 
-                if (tile) {
-                    for (let direction = 0; direction < 4; direction += 1) {
-                        const vector = getVector(direction);
-                        const cell = { x: x + vector.x, y: y + vector.y };
+                if (!tile) {
+                    continue;
+                }
 
-                        const other = self.grid.cellContent(cell);
+                const keys = Object.keys(VECTOR_MAP);
 
-                        if (other && other.value === tile.value) {
-                            return true; // These two tiles can be merged
-                        }
+                for (let i = 0; i < keys.length; i += 1) {
+                    const vector = getVector(keys[i]);
+                    const cell = { x: x + vector.x, y: y + vector.y };
+
+                    const other = self.grid.cellContent(cell);
+
+                    if (other && other.value === tile.value) {
+                        return true; // These two tiles can be merged
                     }
                 }
             }

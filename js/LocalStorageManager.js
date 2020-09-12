@@ -15,6 +15,7 @@ export default class LocalStorageManager {
 
     getGameState() {
         const stateJSON = this.storage.getItem(this.gameStateKey);
+
         return stateJSON ? JSON.parse(stateJSON) : null;
     }
 

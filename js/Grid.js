@@ -3,33 +3,18 @@ import Tile from './Tile.js';
 export default class Grid {
     constructor(size, previousState) {
         this.size = size;
-        this.cells = previousState ? this.fromState(previousState) : this.empty();
+        this.cells = this.create(previousState);
     }
 
-    empty() {
+    create(state) {
         const cells = [];
 
         for (let x = 0; x < this.size; x += 1) {
             const row = [];
 
             for (let y = 0; y < this.size; y += 1) {
-                row.push(null);
-            }
+                const tile = state ? state[x][y] : null;
 
-            cells[x] = row;
-        }
-
-        return cells;
-    }
-
-    fromState(state) {
-        const cells = [];
-
-        for (let x = 0; x < this.size; x += 1) {
-            const row = [];
-
-            for (let y = 0; y < this.size; y += 1) {
-                const tile = state[x][y];
                 row.push(tile ? new Tile(tile.position, tile.value) : null);
             }
 
@@ -82,10 +67,9 @@ export default class Grid {
     }
 
     cellContent(cell) {
-        if (this.withinBounds(cell)) {
-            return this.cells[cell.x][cell.y];
-        }
-        return null;
+        return this.withinBounds(cell)
+            ? this.cells[cell.x][cell.y]
+            : null;
     }
 
     insertTile(tile) {
@@ -98,11 +82,11 @@ export default class Grid {
 
     withinBounds(position) {
         return position.x >= 0 && position.x < this.size
-        && position.y >= 0 && position.y < this.size;
+            && position.y >= 0 && position.y < this.size;
     }
 
     transpose() {
-        const newCells = this.empty();
+        const newCells = this.create();
 
         for (let x = 0; x < this.size; x += 1) {
             for (let y = 0; y < this.size; y += 1) {
@@ -116,25 +100,21 @@ export default class Grid {
     flipX(hold) {
         this.cells = this.cells.reverse();
 
-        if (hold) {
-            return;
+        if (!hold) {
+            this.updateTiles();
         }
-
-        this.updateTiles();
     }
 
     flipY(hold) {
         this.cells = this.cells.map((row) => row.reverse());
 
-        if (hold) {
-            return;
+        if (!hold) {
+            this.updateTiles();
         }
-
-        this.updateTiles();
     }
 
     rotate(n) {
-        switch (((n % 4) + 4) % 4) {
+        switch (((n % this.size) + this.size) % this.size) {
             case 1:
                 this.transpose();
                 this.flipX();

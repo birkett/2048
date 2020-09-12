@@ -31,53 +31,55 @@ export default class KeyboardInputManager {
         const self = this;
 
         const map = {
-            ArrowUp: 0,
-            ArrowRight: 1,
-            ArrowDown: 2,
-            ArrowLeft: 3,
-            KeyW: 0,
-            KeyD: 1,
-            KeyS: 2,
-            KeyA: 3,
+            ArrowUp: 'Up',
+            ArrowRight: 'Right',
+            ArrowDown: 'Down',
+            ArrowLeft: 'Left',
+            KeyW: 'Up',
+            KeyD: 'Right',
+            KeyS: 'Down',
+            KeyA: 'Left',
         };
 
-        // Respond to direction keys
         document.addEventListener('keydown', (event) => {
             const modifiers = event.altKey || event.ctrlKey || event.metaKey || event.shiftKey;
             const mapped = map[event.code];
 
-            if (!modifiers) {
-                if (mapped !== undefined) {
-                    event.preventDefault();
-                    self.emit('move', mapped);
+            if (modifiers) {
+                if (event.code === 'KeyZ' && (event.ctrlKey || event.metaKey)) {
+                    self.undo.call(self, event);
                 }
 
-                // R key restarts the game
-                if (event.code === 'KeyR') {
-                    self.restart.call(self, event);
-                }
-
-                if (event.code === 'KeyQ' || event.code === 'PageUp') {
-                    event.preventDefault();
-                    self.emit('rotate', -1);
-                }
-
-                if (event.code === 'KeyE' || event.code === 'PageDown') {
-                    event.preventDefault();
-                    self.emit('rotate', 1);
-                }
-
-                if (event.code === 'KeyV') {
-                    self.emit('flipX');
-                }
-
-                if (event.code === 'KeyH') {
-                    self.emit('flipY');
-                }
+                return;
             }
 
-            if (event.code === 'KeyZ' && (event.ctrlKey || event.metaKey)) {
-                self.undo.call(self, event);
+            if (mapped !== undefined) {
+                event.preventDefault();
+                self.emit('move', mapped);
+
+                return;
+            }
+
+            if (event.code === 'KeyR') {
+                self.restart.call(self, event);
+            }
+
+            if (event.code === 'KeyQ' || event.code === 'PageUp') {
+                event.preventDefault();
+                self.emit('rotate', -1);
+            }
+
+            if (event.code === 'KeyE' || event.code === 'PageDown') {
+                event.preventDefault();
+                self.emit('rotate', 1);
+            }
+
+            if (event.code === 'KeyV') {
+                self.emit('flipX');
+            }
+
+            if (event.code === 'KeyH') {
+                self.emit('flipY');
             }
         });
 
@@ -94,18 +96,12 @@ export default class KeyboardInputManager {
         const gameContainer = document.getElementsByClassName('game-container')[0];
 
         gameContainer.addEventListener(this.eventTouchstart, (event) => {
-            if ((!window.navigator.msPointerEnabled && event.touches.length > 1)
-                || event.targetTouches.length > 1) {
+            if (event.touches.length > 1 || event.targetTouches.length > 1) {
                 return; // Ignore if touching with more than 1 finger
             }
 
-            if (window.navigator.msPointerEnabled) {
-                touchStartClientX = event.pageX;
-                touchStartClientY = event.pageY;
-            } else {
-                touchStartClientX = event.touches[0].clientX;
-                touchStartClientY = event.touches[0].clientY;
-            }
+            touchStartClientX = event.touches[0].clientX;
+            touchStartClientY = event.touches[0].clientY;
 
             event.preventDefault();
         });
@@ -115,21 +111,12 @@ export default class KeyboardInputManager {
         });
 
         gameContainer.addEventListener(this.eventTouchend, (event) => {
-            if ((!window.navigator.msPointerEnabled && event.touches.length > 0)
-                || event.targetTouches.length > 0) {
+            if (event.touches.length > 0 || event.targetTouches.length > 0) {
                 return; // Ignore if still touching with one or more fingers
             }
 
-            let touchEndClientX; let
-                touchEndClientY;
-
-            if (window.navigator.msPointerEnabled) {
-                touchEndClientX = event.pageX;
-                touchEndClientY = event.pageY;
-            } else {
-                touchEndClientX = event.changedTouches[0].clientX;
-                touchEndClientY = event.changedTouches[0].clientY;
-            }
+            const touchEndClientX = event.changedTouches[0].clientX;
+            const touchEndClientY = event.changedTouches[0].clientY;
 
             const dx = touchEndClientX - touchStartClientX;
             const absDx = Math.abs(dx);
@@ -138,8 +125,13 @@ export default class KeyboardInputManager {
             const absDy = Math.abs(dy);
 
             if (Math.max(absDx, absDy) > 10) {
-                // (right : left) : (down : up)
-                self.emit('move', absDx > absDy ? (dx > 0 ? 1 : 3) : (dy > 0 ? 2 : 0));
+                const rightLeft = (dx > 0 ? 'Right' : 'Left');
+                const upDown = (dy > 0 ? 'Down' : 'Up');
+                const data = absDx > absDy
+                    ? rightLeft
+                    : upDown;
+
+                self.emit('move', data);
             }
         });
     }
@@ -166,6 +158,7 @@ export default class KeyboardInputManager {
 
     bindButtonPress(selector, fn) {
         const button = document.querySelector(selector);
+
         button.addEventListener('click', fn.bind(this));
         button.addEventListener(this.eventTouchend, fn.bind(this));
     }
