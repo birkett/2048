@@ -69,10 +69,10 @@ export default class HtmlActuator {
             self.updateBestScore(metadata.bestScore);
 
             if (metadata.terminated) {
-                if (metadata.over) {
-                    self.message(false); // You lose
-                } else if (metadata.won) {
+                if (metadata.won) {
                     self.message(true); // You win!
+                } else if (metadata.over) {
+                    self.message(false); // You lose
                 }
             }
         });
