@@ -51,11 +51,29 @@ export default class KeyboardInputManager {
                     event.preventDefault();
                     self.emit('move', mapped);
                 }
-            }
 
-            // R key restarts the game
-            if (!modifiers && event.code === 'KeyR') {
-                self.restart.call(self, event);
+                // R key restarts the game
+                if (event.code === 'KeyR') {
+                    self.restart.call(self, event);
+                }
+
+                if (event.code === 'KeyQ' || event.code === 'PageUp') {
+                    event.preventDefault();
+                    self.emit('rotate', -1);
+                }
+
+                if (event.code === 'KeyE' || event.code === 'PageDown') {
+                    event.preventDefault();
+                    self.emit('rotate', 1);
+                }
+
+                if (event.code === 'KeyV') {
+                    self.emit('flipX');
+                }
+
+                if (event.code === 'KeyH') {
+                    self.emit('flipY');
+                }
             }
 
             if (event.code === 'KeyZ' && (event.ctrlKey || event.metaKey)) {

@@ -101,6 +101,68 @@ export default class Grid {
         && position.y >= 0 && position.y < this.size;
     }
 
+    transpose() {
+        const newCells = this.empty();
+
+        for (let x = 0; x < this.size; x += 1) {
+            for (let y = 0; y < this.size; y += 1) {
+                newCells[y][x] = this.cells[x][y];
+            }
+        }
+
+        this.cells = newCells;
+    }
+
+    flipX(hold) {
+        this.cells = this.cells.reverse();
+
+        if (hold) {
+            return;
+        }
+
+        this.updateTiles();
+    }
+
+    flipY(hold) {
+        this.cells = this.cells.map((row) => row.reverse());
+
+        if (hold) {
+            return;
+        }
+
+        this.updateTiles();
+    }
+
+    rotate(n) {
+        switch (((n % 4) + 4) % 4) {
+            case 1:
+                this.transpose();
+                this.flipX();
+
+                break;
+            case 2:
+                this.flipX(true);
+                this.flipY();
+
+                break;
+            case 3:
+                this.transpose();
+                this.flipY();
+
+                break;
+            default:
+                break;
+        }
+    }
+
+    updateTiles() {
+        this.eachCell((x, y, tile) => {
+            if (tile) {
+                tile.updatePosition({ x, y });
+            }
+        });
+    }
+
     serialize() {
         const cellState = [];
 

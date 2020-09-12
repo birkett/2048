@@ -28,6 +28,9 @@ export default class GameManager {
         this.stateHistory = [];
 
         this.inputManager.on('move', this.move.bind(this));
+        this.inputManager.on('rotate', this.rotate.bind(this));
+        this.inputManager.on('flipX', this.flipX.bind(this));
+        this.inputManager.on('flipY', this.flipY.bind(this));
         this.inputManager.on('restart', this.restart.bind(this));
         this.inputManager.on('restartWithConfirmation', this.restartWithConfirmation.bind(this));
         this.inputManager.on('keepPlaying', this.keepPlaying.bind(this));
@@ -242,6 +245,36 @@ export default class GameManager {
 
             this.actuate();
         }
+    }
+
+    rotate(n) {
+        if (this.over) {
+            return;
+        }
+
+        this.prepareTiles();
+        this.grid.rotate(n);
+        this.actuate();
+    }
+
+    flipX() {
+        if (this.over) {
+            return;
+        }
+
+        this.prepareTiles();
+        this.grid.flipX();
+        this.actuate();
+    }
+
+    flipY() {
+        if (this.over) {
+            return;
+        }
+
+        this.prepareTiles();
+        this.grid.flipY();
+        this.actuate();
     }
 
     buildTraversals(vector) {

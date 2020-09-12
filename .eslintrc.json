@@ -11,7 +11,7 @@
         "ecmaVersion": 11
     },
     "rules": {
-        "indent": ["error", 4],
+        "indent": ["error", 4, { "SwitchCase": 1 }],
         "max-len": ["error", 100]
     }
 }
