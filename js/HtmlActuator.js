@@ -93,8 +93,6 @@ export default class HtmlActuator {
         // We can't use classlist because it somehow glitches when replacing classes
         const classes = ['tile', `tile-${tile.value}`, positionClassString];
 
-        if (tile.value > 2048) classes.push('tile-super');
-
         applyClasses(wrapper, classes);
 
         inner.classList.add('tile-inner');
