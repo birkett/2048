@@ -29,6 +29,10 @@ export default class HtmlActuator {
     }
 
     buildHTMLGrid(size) {
+        if (this.gridContainer.children.length >= size) {
+            return;
+        }
+
         for (let y = 0; y < size; y += 1) {
             const row = document.createElement('div');
 
