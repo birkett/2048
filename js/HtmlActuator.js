@@ -19,6 +19,7 @@ const positionClass = (position) => {
 export default class HtmlActuator {
     constructor() {
         this.tileContainer = document.querySelector('.tile-container');
+        this.movesContainer = document.querySelector('.moves-container');
         this.scoreContainer = document.querySelector('.score-container');
         this.bestContainer = document.querySelector('.best-container');
         this.messageContainer = document.querySelector('.game-message');
@@ -59,6 +60,7 @@ export default class HtmlActuator {
                 });
             });
 
+            self.updateMoves(metadata.moves);
             self.updateScore(metadata.score);
             self.updateBestScore(metadata.bestScore);
 
@@ -118,6 +120,10 @@ export default class HtmlActuator {
 
         // Put the tile on the board
         this.tileContainer.appendChild(wrapper);
+    }
+
+    updateMoves(moves) {
+        this.movesContainer.textContent = moves;
     }
 
     updateScore(score) {

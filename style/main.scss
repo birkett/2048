@@ -97,6 +97,7 @@ h1.title {
   text-align: right;
 }
 
+.moves-container,
 .score-container,
 .best-container {
   $height: 25px;
@@ -144,6 +145,10 @@ h1.title {
     animation: move-up 600ms ease-in;
     animation-fill-mode: both;
   }
+}
+
+.moves-container:after {
+  content: "Moves";
 }
 
 .score-container:after {

@@ -60,12 +60,14 @@ export default class GameManager {
         if (previousState) {
             this.grid = new Grid(previousState.grid.size,
                 previousState.grid.cells); // Reload grid
+            this.moves = previousState.moves;
             this.score = previousState.score;
             this.over = previousState.over;
             this.won = previousState.won;
             this.keepPlaying = previousState.keepPlaying;
         } else {
             this.grid = new Grid(this.size);
+            this.moves = -1;
             this.score = 0;
             this.over = false;
             this.won = false;
@@ -104,6 +106,7 @@ export default class GameManager {
         }
 
         this.actuator.actuate(this.grid, {
+            moves: this.moves += 1,
             score: this.score,
             over: this.over,
             won: this.won,
@@ -115,6 +118,7 @@ export default class GameManager {
     serialize() {
         return {
             grid: this.grid.serialize(),
+            moves: this.moves,
             score: this.score,
             over: this.over,
             won: this.won,
