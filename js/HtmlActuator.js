@@ -22,9 +22,28 @@ export default class HtmlActuator {
         this.scoreContainer = document.querySelector('.score-container');
         this.bestContainer = document.querySelector('.best-container');
         this.messageContainer = document.querySelector('.game-message');
+        this.gridContainer    = document.querySelector('.grid-container');
 
         this.score = 0;
     }
+
+    buildHTMLGrid(size) {
+        for (let y = 0; y < size; y++) {
+            let row = document.createElement('div');
+
+            row.className = 'grid-row';
+
+            for (let x = 0; x < size; x++) {
+                let cell = document.createElement('div');
+
+                cell.className = 'grid-cell';
+
+                row.appendChild(cell);
+            }
+
+            this.gridContainer.appendChild(row);
+        }
+    };
 
     actuate(grid, metadata) {
         const self = this;

@@ -52,6 +52,8 @@ export default class GameManager {
     }
 
     setup() {
+        this.actuator.buildHTMLGrid(this.size);
+
         const previousState = this.storageManager.getGameState();
 
         // Reload the game from a previous game if present
