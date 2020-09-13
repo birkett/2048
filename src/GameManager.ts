@@ -1,6 +1,6 @@
 import Grid from './Grid.js';
 import GameState from './GameState';
-import Tile, {NormalisedTile} from './Tile.js';
+import Tile from './Tile.js';
 import KeyboardInputManager from "./KeyboardInputManager";
 import HtmlActuator from "./HtmlActuator";
 import LocalStorageManager from "./LocalStorageManager";
@@ -137,7 +137,7 @@ export default class GameManager implements GameState
     }
 
     loadFromPreviousState(previousState: GameState) {
-        this.grid = new Grid(previousState.grid!.size, <NormalisedTile[][]><unknown>previousState.grid!.cells);
+        this.grid = new Grid(previousState.grid!.size, previousState.grid!.cells);
         this.moves = previousState.moves;
         this.score = previousState.score;
         this.over = previousState.over;

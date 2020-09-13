@@ -12,13 +12,7 @@ const applyClasses = (element: Element, classes: string[]) => {
     element.setAttribute('class', classes.join(' '));
 };
 
-const normalizePosition = (position: Position2d) => ({ x: position.x + 1, y: position.y + 1 });
-
-const positionClass = (position: Position2d) => {
-    position = normalizePosition(position);
-
-    return `tile-position-${position.x}-${position.y}`;
-};
+const positionClass = (position: Position2d) => `tile-position-${position.x + 1}-${position.y + 1}`;
 
 export default class HtmlActuator {
     tileContainer: Element;

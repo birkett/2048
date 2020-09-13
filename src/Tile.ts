@@ -1,9 +1,3 @@
-export interface NormalisedTile
-{
-    position: Position2d;
-    value: number;
-}
-
 export default class Tile implements Position2d {
     x: number;
     y: number;
@@ -35,10 +29,8 @@ export default class Tile implements Position2d {
 
     serialize() {
         return {
-            position: {
-                x: this.x,
-                y: this.y,
-            },
+            x: this.x,
+            y: this.y,
             value: this.value,
         };
     }

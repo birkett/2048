@@ -1,15 +1,15 @@
-import Tile, { NormalisedTile } from './Tile.js';
+import Tile from './Tile.js';
 
 export default class Grid {
     size: number;
     cells: Tile[][];
 
-    constructor(size: number, previousState?: NormalisedTile[][]) {
+    constructor(size: number, previousState?: Tile[][]) {
         this.size = size;
         this.cells = this.create(previousState);
     }
 
-    create(state?: NormalisedTile[][]) {
+    create(state?: Tile[][]) {
         const cells: Tile[][] = [];
 
         for (let x = 0; x < this.size; x += 1) {
@@ -18,7 +18,7 @@ export default class Grid {
             for (let y = 0; y < this.size; y += 1) {
                 const tile = state ? state[x][y] : null;
 
-                row.push(tile ? new Tile(tile.position, tile.value) : null);
+                row.push(tile ? new Tile({x: tile.x, y: tile.y}, tile.value) : null);
             }
 
             cells[x] = <Tile[]>row;
