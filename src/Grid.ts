@@ -1,13 +1,16 @@
-import Tile from './Tile.js';
+import Tile, { NormalisedTile } from './Tile.js';
 
 export default class Grid {
-    constructor(size, previousState) {
+    size: number;
+    cells: Tile[][];
+
+    constructor(size: number, previousState?: NormalisedTile[][]) {
         this.size = size;
         this.cells = this.create(previousState);
     }
 
-    create(state) {
-        const cells = [];
+    create(state?: NormalisedTile[][]) {
+        const cells: Tile[][] = [];
 
         for (let x = 0; x < this.size; x += 1) {
             const row = [];
@@ -18,7 +21,7 @@ export default class Grid {
                 row.push(tile ? new Tile(tile.position, tile.value) : null);
             }
 
-            cells[x] = row;
+            cells[x] = <Tile[]>row;
         }
 
         return cells;
@@ -31,13 +34,13 @@ export default class Grid {
             return cells[Math.floor(Math.random() * cells.length)];
         }
 
-        return [];
+        return null;
     }
 
     availableCells() {
-        const cells = [];
+        const cells: Position2d[] = [];
 
-        this.eachCell((x, y, tile) => {
+        this.eachCell((x: number, y: number, tile: Tile) => {
             if (!tile) {
                 cells.push({ x, y });
             }
@@ -46,7 +49,7 @@ export default class Grid {
         return cells;
     }
 
-    eachCell(callback) {
+    eachCell(callback: Function) {
         for (let x = 0; x < this.size; x += 1) {
             for (let y = 0; y < this.size; y += 1) {
                 callback(x, y, this.cells[x][y]);
@@ -58,29 +61,29 @@ export default class Grid {
         return !!this.availableCells().length;
     }
 
-    cellAvailable(cell) {
+    cellAvailable(cell: Position2d) {
         return !this.cellOccupied(cell);
     }
 
-    cellOccupied(cell) {
+    cellOccupied(cell: Position2d) {
         return !!this.cellContent(cell);
     }
 
-    cellContent(cell) {
+    cellContent(cell: Position2d) {
         return this.withinBounds(cell)
             ? this.cells[cell.x][cell.y]
             : null;
     }
 
-    insertTile(tile) {
+    insertTile(tile: Tile) {
         this.cells[tile.x][tile.y] = tile;
     }
 
-    removeTile(tile) {
-        this.cells[tile.x][tile.y] = null;
+    removeTile(tile: Tile) {
+        this.cells[tile.x][tile.y] = <Tile><unknown>null;
     }
 
-    withinBounds(position) {
+    withinBounds(position: Position2d) {
         return position.x >= 0 && position.x < this.size
             && position.y >= 0 && position.y < this.size;
     }
@@ -97,7 +100,7 @@ export default class Grid {
         this.cells = newCells;
     }
 
-    flipX(hold) {
+    flipX(hold?: boolean) {
         this.cells = this.cells.reverse();
 
         if (!hold) {
@@ -105,7 +108,7 @@ export default class Grid {
         }
     }
 
-    flipY(hold) {
+    flipY(hold?: boolean) {
         this.cells = this.cells.map((row) => row.reverse());
 
         if (!hold) {
@@ -113,7 +116,7 @@ export default class Grid {
         }
     }
 
-    rotate(n) {
+    rotate(n: number) {
         switch (((n % this.size) + this.size) % this.size) {
             case 1:
                 this.transpose();
@@ -136,7 +139,7 @@ export default class Grid {
     }
 
     updateTiles() {
-        this.eachCell((x, y, tile) => {
+        this.eachCell((x: number, y: number, tile: Tile) => {
             if (tile) {
                 tile.updatePosition({ x, y });
             }

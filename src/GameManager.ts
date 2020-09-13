@@ -1,19 +1,49 @@
 import Grid from './Grid.js';
-import Tile from './Tile.js';
+import GameState from './GameState';
+import Tile, {NormalisedTile} from './Tile.js';
+import KeyboardInputManager from "./KeyboardInputManager";
+import HtmlActuator from "./HtmlActuator";
+import LocalStorageManager from "./LocalStorageManager";
 
-const VECTOR_MAP = {
+interface Traversals
+{
+    x: number[];
+    y: number[];
+}
+
+interface VectorMap
+{
+    [index: string]: Position2d;
+}
+
+const VECTOR_MAP: VectorMap = {
     Up: { x: 0, y: -1 },
     Right: { x: 1, y: 0 },
     Down: { x: 0, y: 1 },
     Left: { x: -1, y: 0 },
 };
 
-const getVector = (direction) => VECTOR_MAP[direction];
+const getVector = (direction: string) => VECTOR_MAP[direction];
 
-const positionsEqual = (first, second) => first.x === second.x && first.y === second.y;
+const positionsEqual = (first: Position2d, second: Position2d) => first.x === second.x && first.y === second.y;
 
-export default class GameManager {
-    constructor(size, InputManager, Actuator, StorageManager) {
+export default class GameManager implements GameState
+{
+    size: number;
+    inputManager: KeyboardInputManager;
+    storageManager: LocalStorageManager;
+    actuator: HtmlActuator;
+    startTiles: number;
+    undoLimit: number;
+    stateHistory: GameState[];
+    keepPlaying: boolean;
+    over: boolean;
+    won: boolean;
+    grid: Grid;
+    moves: number;
+    score: number;
+
+    constructor(size: number, InputManager: typeof KeyboardInputManager, Actuator: typeof HtmlActuator, StorageManager: typeof LocalStorageManager) {
         this.size = size;
         this.inputManager = new InputManager();
         this.storageManager = new StorageManager();
@@ -23,6 +53,12 @@ export default class GameManager {
 
         this.undoLimit = 5;
         this.stateHistory = [];
+        this.keepPlaying = false;
+        this.over = false;
+        this.won = false;
+        this.grid = new Grid(4);
+        this.moves = 0;
+        this.score = 0;
 
         this.inputManager.on('move', this.move.bind(this));
         this.inputManager.on('rotate', this.rotate.bind(this));
@@ -30,7 +66,7 @@ export default class GameManager {
         this.inputManager.on('flipY', this.flipY.bind(this));
         this.inputManager.on('restart', this.restart.bind(this));
         this.inputManager.on('restartWithConfirmation', this.restartWithConfirmation.bind(this));
-        this.inputManager.on('keepPlaying', this.keepPlaying.bind(this));
+        this.inputManager.on('keepPlaying', this.keepPlayingListener.bind(this));
         this.inputManager.on('undo', this.undo.bind(this));
 
         this.setup();
@@ -51,7 +87,7 @@ export default class GameManager {
         this.actuator.promptRestart();
     }
 
-    keepPlaying() {
+    keepPlayingListener() {
         this.keepPlaying = true;
         this.actuator.continueGame();
     }
@@ -100,13 +136,13 @@ export default class GameManager {
         this.addStartTiles();
     }
 
-    loadFromPreviousState(previousState) {
-        this.grid = new Grid(previousState.grid.size, previousState.grid.cells);
+    loadFromPreviousState(previousState: GameState) {
+        this.grid = new Grid(previousState.grid!.size, <NormalisedTile[][]><unknown>previousState.grid!.cells);
         this.moves = previousState.moves;
         this.score = previousState.score;
         this.over = previousState.over;
         this.won = previousState.won;
-        this.keepPlaying = previousState.keepPlaying;
+        this.keepPlaying = previousState.keepPlaying!;
     }
 
     addStartTiles() {
@@ -121,7 +157,7 @@ export default class GameManager {
         }
 
         const value = Math.random() < 0.9 ? 2 : 4;
-        const tile = new Tile(this.grid.randomAvailableCell(), value);
+        const tile = new Tile(this.grid.randomAvailableCell()!, value);
 
         this.grid.insertTile(tile);
     }
@@ -147,9 +183,9 @@ export default class GameManager {
         });
     }
 
-    serialize() {
+    serialize(): GameState {
         return {
-            grid: this.grid.serialize(),
+            grid: <Grid><unknown>this.grid.serialize(),
             moves: this.moves,
             score: this.score,
             over: this.over,
@@ -159,7 +195,7 @@ export default class GameManager {
     }
 
     prepareTiles() {
-        this.grid.eachCell((x, y, tile) => {
+        this.grid.eachCell((x: number, y: number, tile: Tile) => {
             if (!tile) {
                 return;
             }
@@ -169,14 +205,14 @@ export default class GameManager {
         });
     }
 
-    moveTile(tile, cell) {
-        this.grid.cells[tile.x][tile.y] = null;
+    moveTile(tile: Tile, cell: Position2d) {
+        this.grid.cells[tile.x][tile.y] = <Tile><unknown>null;
         this.grid.cells[cell.x][cell.y] = tile;
 
         tile.updatePosition(cell);
     }
 
-    move(direction) {
+    move(direction: string) {
         const self = this;
 
         if (this.isGameTerminated()) {
@@ -252,7 +288,7 @@ export default class GameManager {
         this.actuate();
     }
 
-    rotate(n) {
+    rotate(n: number) {
         if (this.over) {
             return;
         }
@@ -282,8 +318,8 @@ export default class GameManager {
         this.actuate();
     }
 
-    buildTraversals(vector) {
-        const traversals = { x: [], y: [] };
+    buildTraversals(vector: Position2d) {
+        const traversals: Traversals = { x: [], y: [] };
 
         for (let pos = 0; pos < this.size; pos += 1) {
             traversals.x.push(pos);
@@ -302,7 +338,7 @@ export default class GameManager {
         return traversals;
     }
 
-    findFarthestPosition(cell, vector) {
+    findFarthestPosition(cell: Position2d, vector: Position2d) {
         let previous;
 
         // Progress towards the vector direction until an obstacle is found

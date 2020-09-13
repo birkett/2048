@@ -1,34 +1,53 @@
-const clearContainer = (container) => {
+import Tile from "./Tile";
+import GameState from "./GameState";
+import Grid from "./Grid";
+
+const clearContainer = (container: Element) => {
     while (container.firstChild) {
         container.removeChild(container.firstChild);
     }
 };
 
-const applyClasses = (element, classes) => {
+const applyClasses = (element: Element, classes: string[]) => {
     element.setAttribute('class', classes.join(' '));
 };
 
-const normalizePosition = (position) => ({ x: position.x + 1, y: position.y + 1 });
+const normalizePosition = (position: Position2d) => ({ x: position.x + 1, y: position.y + 1 });
 
-const positionClass = (position) => {
+const positionClass = (position: Position2d) => {
     position = normalizePosition(position);
 
     return `tile-position-${position.x}-${position.y}`;
 };
 
 export default class HtmlActuator {
+    tileContainer: Element;
+    movesContainer: Element;
+    scoreContainer: Element;
+    bestContainer: Element;
+    messageContainer: Element;
+    gridContainer: Element;
+    score: number;
+
     constructor() {
-        this.tileContainer = document.querySelector('.tile-container');
-        this.movesContainer = document.querySelector('.moves-container');
-        this.scoreContainer = document.querySelector('.score-container');
-        this.bestContainer = document.querySelector('.best-container');
-        this.messageContainer = document.querySelector('.game-message');
-        this.gridContainer = document.querySelector('.grid-container');
+        this.tileContainer = document.querySelector('.tile-container')!;
+        this.movesContainer = document.querySelector('.moves-container')!;
+        this.scoreContainer = document.querySelector('.score-container')!;
+        this.bestContainer = document.querySelector('.best-container')!;
+        this.messageContainer = document.querySelector('.game-message')!;
+        this.gridContainer = document.querySelector('.grid-container')!;
 
         this.score = 0;
+
+        if (
+            !this.tileContainer || !this.movesContainer || !this.scoreContainer
+            || !this.bestContainer || !this.messageContainer || !this.gridContainer
+        ) {
+            throw new Error('Containers not found.');
+        }
     }
 
-    buildHTMLGrid(size) {
+    buildHTMLGrid(size: number) {
         if (this.gridContainer.children.length >= size) {
             return;
         }
@@ -50,7 +69,7 @@ export default class HtmlActuator {
         }
     }
 
-    actuate(grid, metadata) {
+    actuate(grid: Grid, metadata: GameState) {
         const self = this;
 
         window.requestAnimationFrame(() => {
@@ -66,7 +85,7 @@ export default class HtmlActuator {
 
             self.updateMoves(metadata.moves);
             self.updateScore(metadata.score);
-            self.updateBestScore(metadata.bestScore);
+            self.updateBestScore(metadata.bestScore!);
 
             if (metadata.terminated) {
                 if (metadata.won) {
@@ -82,7 +101,7 @@ export default class HtmlActuator {
         this.clearMessage();
     }
 
-    addTile(tile) {
+    addTile(tile: Tile) {
         const self = this;
 
         const wrapper = document.createElement('div');
@@ -96,7 +115,7 @@ export default class HtmlActuator {
         applyClasses(wrapper, classes);
 
         inner.classList.add('tile-inner');
-        inner.textContent = tile.value;
+        inner.textContent = tile.value.toString();
 
         if (tile.previousPosition) {
             // Make sure that the tile gets rendered in the previous position first
@@ -124,17 +143,17 @@ export default class HtmlActuator {
         this.tileContainer.appendChild(wrapper);
     }
 
-    updateMoves(moves) {
-        this.movesContainer.textContent = moves;
+    updateMoves(moves: number) {
+        this.movesContainer.textContent = moves.toString();
     }
 
-    updateScore(score) {
+    updateScore(score: number) {
         clearContainer(this.scoreContainer);
 
         const difference = score - this.score;
         this.score = score;
 
-        this.scoreContainer.textContent = this.score;
+        this.scoreContainer.textContent = this.score.toString();
 
         if (difference > 0) {
             const addition = document.createElement('div');
@@ -145,11 +164,11 @@ export default class HtmlActuator {
         }
     }
 
-    updateBestScore(bestScore) {
-        this.bestContainer.textContent = bestScore;
+    updateBestScore(bestScore: number) {
+        this.bestContainer.textContent = bestScore.toString();
     }
 
-    message(won) {
+    message(won: boolean) {
         const type = won ? 'game-won' : 'game-over';
         const message = won ? 'You win!' : 'Game over!';
 

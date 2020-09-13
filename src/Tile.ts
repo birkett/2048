@@ -1,5 +1,17 @@
-export default class Tile {
-    constructor(position, value) {
+export interface NormalisedTile
+{
+    position: Position2d;
+    value: number;
+}
+
+export default class Tile implements Position2d {
+    x: number;
+    y: number;
+    value: number;
+    previousPosition: Position2d | null;
+    mergedFrom: Tile[] | null;
+
+    constructor(position: Position2d, value: number) {
         this.x = position.x;
         this.y = position.y;
         this.value = value || 2;
@@ -8,7 +20,7 @@ export default class Tile {
         this.mergedFrom = null; // Tracks tiles that merged together
     }
 
-    setMergedFrom(value) {
+    setMergedFrom(value: Tile[] | null) {
         this.mergedFrom = value;
     }
 
@@ -16,7 +28,7 @@ export default class Tile {
         this.previousPosition = { x: this.x, y: this.y };
     }
 
-    updatePosition(position) {
+    updatePosition(position: Position2d) {
         this.x = position.x;
         this.y = position.y;
     }

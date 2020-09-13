@@ -1,4 +1,10 @@
+import GameState from "./GameState";
+
 export default class LocalStorageManager {
+    bestScoreKey: string;
+    gameStateKey: string;
+    storage: Storage;
+
     constructor() {
         this.bestScoreKey = 'bestScore';
         this.gameStateKey = 'gameState';
@@ -6,11 +12,11 @@ export default class LocalStorageManager {
     }
 
     getBestScore() {
-        return this.storage.getItem(this.bestScoreKey) || 0;
+        return Number(this.storage.getItem(this.bestScoreKey)) || 0;
     }
 
-    setBestScore(score) {
-        this.storage.setItem(this.bestScoreKey, score);
+    setBestScore(score: number) {
+        this.storage.setItem(this.bestScoreKey, score.toString());
     }
 
     getGameState() {
@@ -19,7 +25,7 @@ export default class LocalStorageManager {
         return stateJSON ? JSON.parse(stateJSON) : null;
     }
 
-    setGameState(gameState) {
+    setGameState(gameState: GameState) {
         this.storage.setItem(this.gameStateKey, JSON.stringify(gameState));
     }
 

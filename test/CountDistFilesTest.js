@@ -4,7 +4,6 @@ const {
     describe,
     expect,
     it,
-    xit,
     suite,
 } = require('../lib/test/testSystem');
 
