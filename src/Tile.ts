@@ -1,9 +1,12 @@
 import Position2d from './Position2d';
 
-export default class Tile implements Position2d {
-    x: number;
+interface TileSerialized {
+    position: Position2d;
+    value: number;
+}
 
-    y: number;
+export default class Tile implements TileSerialized {
+    position: Position2d;
 
     value: number;
 
@@ -12,8 +15,7 @@ export default class Tile implements Position2d {
     mergedFrom: Tile[] | null;
 
     constructor(position: Position2d, value: number) {
-        this.x = position.x;
-        this.y = position.y;
+        this.position = position;
         this.value = value;
 
         this.previousPosition = null;
@@ -25,18 +27,16 @@ export default class Tile implements Position2d {
     }
 
     savePosition(): void {
-        this.previousPosition = { x: this.x, y: this.y };
+        this.previousPosition = this.position;
     }
 
     updatePosition(position: Position2d): void {
-        this.x = position.x;
-        this.y = position.y;
+        this.position = position;
     }
 
-    serialize() {
+    serialize(): TileSerialized {
         return {
-            x: this.x,
-            y: this.y,
+            position: this.position,
             value: this.value,
         };
     }

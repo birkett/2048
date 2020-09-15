@@ -8,6 +8,6 @@
     <body>
         {% include './common/gameContainer.html.njk' %}
 
-        <script type="module" src="../js/application.js"></script>
+        <script type="module" src="../js/application.js?v={{ constants.gitRevision() }}"></script>
     </body>
 </html>

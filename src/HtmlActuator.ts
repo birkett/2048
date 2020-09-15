@@ -76,10 +76,10 @@ export default class HtmlActuator {
         window.requestAnimationFrame(() => {
             clearContainer(self.tileContainer);
 
-            grid.cells.forEach((column) => {
-                column.forEach((cell) => {
-                    if (cell) {
-                        self.addTile(cell);
+            grid.tiles.forEach((column) => {
+                column.forEach((tile) => {
+                    if (tile) {
+                        self.addTile(tile);
                     }
                 });
             });
@@ -107,7 +107,7 @@ export default class HtmlActuator {
 
         const wrapper = document.createElement('div');
         const inner = document.createElement('div');
-        const position = tile.previousPosition || { x: tile.x, y: tile.y };
+        const position = tile.previousPosition || tile.position;
         const positionClassString = positionClass(position);
 
         // We can't use classlist because it somehow glitches when replacing classes
@@ -121,7 +121,7 @@ export default class HtmlActuator {
         if (tile.previousPosition) {
             // Make sure that the tile gets rendered in the previous position first
             window.requestAnimationFrame(() => {
-                classes[2] = positionClass({ x: tile.x, y: tile.y });
+                classes[2] = positionClass(tile.position);
                 applyClasses(wrapper, classes); // Update the position
             });
         } else if (tile.mergedFrom) {

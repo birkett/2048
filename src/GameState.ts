@@ -1,7 +1,7 @@
-import Grid from './Grid';
+import { GridSerialized } from './Grid';
 
 export default interface GameState {
-    grid?: Grid;
+    grid?: GridSerialized;
     moves: number;
     score: number;
     over: boolean;

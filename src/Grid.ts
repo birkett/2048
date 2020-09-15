@@ -1,20 +1,26 @@
 import Tile from './Tile.js';
 import Position2d from './Position2d';
 
-type TileArray = Tile[][];
+type NullableTile = Tile | null;
+type TileArray = NullableTile[][];
 
-export default class Grid {
+export interface GridSerialized {
+    size: number;
+    tiles: TileArray;
+}
+
+export default class Grid implements GridSerialized {
     size: number;
 
-    cells: TileArray;
+    tiles: TileArray;
 
     constructor(size: number, previousState?: TileArray) {
         this.size = size;
-        this.cells = this.create(previousState);
+        this.tiles = this.create(previousState);
     }
 
     create(state?: TileArray): TileArray {
-        const cells: TileArray = [];
+        const tiles: TileArray = [];
 
         for (let x = 0; x < this.size; x += 1) {
             const row = [];
@@ -22,13 +28,13 @@ export default class Grid {
             for (let y = 0; y < this.size; y += 1) {
                 const tile = state ? state[x][y] : null;
 
-                row.push(tile ? new Tile({ x: tile.x, y: tile.y }, tile.value) : null);
+                row.push(tile ? new Tile(tile.position, tile.value) : null);
             }
 
-            cells[x] = <Tile[]>row;
+            tiles[x] = <Tile[]>row;
         }
 
-        return cells;
+        return tiles;
     }
 
     randomAvailableCell(): Position2d | null {
@@ -56,7 +62,7 @@ export default class Grid {
     eachCell(callback: Function): void {
         for (let x = 0; x < this.size; x += 1) {
             for (let y = 0; y < this.size; y += 1) {
-                callback(x, y, this.cells[x][y]);
+                callback(x, y, this.tiles[x][y]);
             }
         }
     }
@@ -65,26 +71,30 @@ export default class Grid {
         return !!this.availableCells().length;
     }
 
-    cellAvailable(cell: Position2d): boolean {
-        return !this.cellOccupied(cell);
+    cellAvailable(position: Position2d): boolean {
+        return !this.cellOccupied(position);
     }
 
-    cellOccupied(cell: Position2d): boolean {
-        return !!this.cellContent(cell);
+    cellOccupied(position: Position2d): boolean {
+        return !!this.cellContent(position);
     }
 
-    cellContent(cell: Position2d): Tile | null {
-        return this.withinBounds(cell)
-            ? this.cells[cell.x][cell.y]
+    cellContent(position: Position2d): Tile | null {
+        return this.withinBounds(position)
+            ? this.tiles[position.x][position.y]
             : null;
     }
 
     insertTile(tile: Tile): void {
-        this.cells[tile.x][tile.y] = tile;
+        this.setTile(tile.position, tile);
     }
 
     removeTile(tile: Tile): void {
-        this.cells[tile.x][tile.y] = <Tile><unknown>null;
+        this.setTile(tile.position, null);
+    }
+
+    setTile(position: Position2d, tile: Tile | null): void {
+        this.tiles[position.x][position.y] = tile;
     }
 
     withinBounds(position: Position2d): boolean {
@@ -97,15 +107,15 @@ export default class Grid {
 
         for (let x = 0; x < this.size; x += 1) {
             for (let y = 0; y < this.size; y += 1) {
-                newCells[y][x] = this.cells[x][y];
+                newCells[y][x] = this.tiles[x][y];
             }
         }
 
-        this.cells = newCells;
+        this.tiles = newCells;
     }
 
     flipX(hold?: boolean): void {
-        this.cells = this.cells.reverse();
+        this.tiles = this.tiles.reverse();
 
         if (!hold) {
             this.updateTiles();
@@ -113,7 +123,7 @@ export default class Grid {
     }
 
     flipY(hold?: boolean): void {
-        this.cells = this.cells.map((row) => row.reverse());
+        this.tiles = this.tiles.map((row) => row.reverse());
 
         if (!hold) {
             this.updateTiles();
@@ -150,22 +160,22 @@ export default class Grid {
         });
     }
 
-    serialize() {
-        const cellState = [];
+    serialize(): GridSerialized {
+        const savedTiles: TileArray = [];
 
         for (let x = 0; x < this.size; x += 1) {
             const row = [];
 
             for (let y = 0; y < this.size; y += 1) {
-                row.push(this.cells[x][y] ? this.cells[x][y].serialize() : null);
+                row.push(this.tiles[x][y] ? this.tiles[x][y]!.serialize() : null);
             }
 
-            cellState[x] = row;
+            savedTiles[x] = <Tile[]>row;
         }
 
         return {
             size: this.size,
-            cells: cellState,
+            tiles: savedTiles,
         };
     }
 }

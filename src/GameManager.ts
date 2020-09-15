@@ -152,7 +152,7 @@ export default class GameManager implements GameState {
     }
 
     loadFromPreviousState(previousState: GameState): void {
-        this.grid = new Grid(previousState.grid!.size, previousState.grid!.cells);
+        this.grid = new Grid(previousState.grid!.size, previousState.grid!.tiles);
         this.moves = previousState.moves;
         this.score = previousState.score;
         this.over = previousState.over;
@@ -200,7 +200,7 @@ export default class GameManager implements GameState {
 
     serialize(): GameState {
         return {
-            grid: <Grid><unknown> this.grid.serialize(),
+            grid: this.grid.serialize(),
             moves: this.moves,
             score: this.score,
             over: this.over,
@@ -220,11 +220,11 @@ export default class GameManager implements GameState {
         });
     }
 
-    moveTile(tile: Tile, cell: Position2d): void {
-        this.grid.cells[tile.x][tile.y] = <Tile><unknown>null;
-        this.grid.cells[cell.x][cell.y] = tile;
+    moveTile(tile: Tile, position: Position2d): void {
+        this.grid.setTile(tile.position, null);
+        this.grid.setTile(position, tile);
 
-        tile.updatePosition(cell);
+        tile.updatePosition(position);
     }
 
     move(direction: string): void {
@@ -277,7 +277,7 @@ export default class GameManager implements GameState {
                     self.moveTile(tile, positions.farthest);
                 }
 
-                if (!positionsEqual(cell, tile)) {
+                if (!positionsEqual(cell, tile.position)) {
                     moved = true;
                 }
             });

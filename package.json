@@ -19,6 +19,7 @@
     "typescript": "^4.0.2"
   },
   "scripts": {
+    "cloc": "cloc assets/ build/ lib/ src/ build.js tests.js",
     "lint": "eslint . --ext .js,.ts",
     "lint:fix": "eslint . --ext .js,.ts --fix",
     "build": "set -e && node build.js && tsc",
