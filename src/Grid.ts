@@ -1,16 +1,20 @@
 import Tile from './Tile.js';
+import Position2d from './Position2d';
+
+type TileArray = Tile[][];
 
 export default class Grid {
     size: number;
-    cells: Tile[][];
 
-    constructor(size: number, previousState?: Tile[][]) {
+    cells: TileArray;
+
+    constructor(size: number, previousState?: TileArray) {
         this.size = size;
         this.cells = this.create(previousState);
     }
 
-    create(state?: Tile[][]) {
-        const cells: Tile[][] = [];
+    create(state?: TileArray): TileArray {
+        const cells: TileArray = [];
 
         for (let x = 0; x < this.size; x += 1) {
             const row = [];
@@ -18,7 +22,7 @@ export default class Grid {
             for (let y = 0; y < this.size; y += 1) {
                 const tile = state ? state[x][y] : null;
 
-                row.push(tile ? new Tile({x: tile.x, y: tile.y}, tile.value) : null);
+                row.push(tile ? new Tile({ x: tile.x, y: tile.y }, tile.value) : null);
             }
 
             cells[x] = <Tile[]>row;
@@ -27,7 +31,7 @@ export default class Grid {
         return cells;
     }
 
-    randomAvailableCell() {
+    randomAvailableCell(): Position2d | null {
         const cells = this.availableCells();
 
         if (cells.length) {
@@ -37,7 +41,7 @@ export default class Grid {
         return null;
     }
 
-    availableCells() {
+    availableCells(): Position2d[] {
         const cells: Position2d[] = [];
 
         this.eachCell((x: number, y: number, tile: Tile) => {
@@ -49,7 +53,7 @@ export default class Grid {
         return cells;
     }
 
-    eachCell(callback: Function) {
+    eachCell(callback: Function): void {
         for (let x = 0; x < this.size; x += 1) {
             for (let y = 0; y < this.size; y += 1) {
                 callback(x, y, this.cells[x][y]);
@@ -57,38 +61,38 @@ export default class Grid {
         }
     }
 
-    cellsAvailable() {
+    cellsAvailable(): boolean {
         return !!this.availableCells().length;
     }
 
-    cellAvailable(cell: Position2d) {
+    cellAvailable(cell: Position2d): boolean {
         return !this.cellOccupied(cell);
     }
 
-    cellOccupied(cell: Position2d) {
+    cellOccupied(cell: Position2d): boolean {
         return !!this.cellContent(cell);
     }
 
-    cellContent(cell: Position2d) {
+    cellContent(cell: Position2d): Tile | null {
         return this.withinBounds(cell)
             ? this.cells[cell.x][cell.y]
             : null;
     }
 
-    insertTile(tile: Tile) {
+    insertTile(tile: Tile): void {
         this.cells[tile.x][tile.y] = tile;
     }
 
-    removeTile(tile: Tile) {
+    removeTile(tile: Tile): void {
         this.cells[tile.x][tile.y] = <Tile><unknown>null;
     }
 
-    withinBounds(position: Position2d) {
+    withinBounds(position: Position2d): boolean {
         return position.x >= 0 && position.x < this.size
             && position.y >= 0 && position.y < this.size;
     }
 
-    transpose() {
+    transpose(): void {
         const newCells = this.create();
 
         for (let x = 0; x < this.size; x += 1) {
@@ -100,7 +104,7 @@ export default class Grid {
         this.cells = newCells;
     }
 
-    flipX(hold?: boolean) {
+    flipX(hold?: boolean): void {
         this.cells = this.cells.reverse();
 
         if (!hold) {
@@ -108,7 +112,7 @@ export default class Grid {
         }
     }
 
-    flipY(hold?: boolean) {
+    flipY(hold?: boolean): void {
         this.cells = this.cells.map((row) => row.reverse());
 
         if (!hold) {
@@ -116,7 +120,7 @@ export default class Grid {
         }
     }
 
-    rotate(n: number) {
+    rotate(n: number): void {
         switch (((n % this.size) + this.size) % this.size) {
             case 1:
                 this.transpose();
@@ -138,7 +142,7 @@ export default class Grid {
         }
     }
 
-    updateTiles() {
+    updateTiles(): void {
         this.eachCell((x: number, y: number, tile: Tile) => {
             if (tile) {
                 tile.updatePosition({ x, y });

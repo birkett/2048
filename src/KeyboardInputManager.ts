@@ -26,8 +26,11 @@ const MovementKeys: MappedKeyList = {
 
 export default class KeyboardInputManager {
     events: EventsList;
+
     eventTouchstart: string;
+
     eventTouchmove: string;
+
     eventTouchend: string;
 
     constructor() {
@@ -40,7 +43,7 @@ export default class KeyboardInputManager {
         this.listen();
     }
 
-    on(event: string, callback: Function) {
+    on(event: string, callback: Function): void {
         if (!this.events[event]) {
             this.events[event] = [];
         }
@@ -48,7 +51,7 @@ export default class KeyboardInputManager {
         this.events[event].push(callback);
     }
 
-    emit(event: string, data?: string | number) {
+    emit(event: string, data?: string | number): void {
         const callbacks = this.events[event];
 
         if (callbacks) {
@@ -58,7 +61,7 @@ export default class KeyboardInputManager {
         }
     }
 
-    listen() {
+    listen(): void {
         const self = this;
 
         document.addEventListener('keydown', (event) => {
@@ -156,27 +159,27 @@ export default class KeyboardInputManager {
         });
     }
 
-    restart(event: Event) {
+    restart(event: Event): void {
         event.preventDefault();
         this.emit('restart');
     }
 
-    undo(event: Event) {
+    undo(event: Event): void {
         event.preventDefault();
         this.emit('undo');
     }
 
-    restartWithConfirmation(event: Event) {
+    restartWithConfirmation(event: Event): void {
         event.preventDefault();
         this.emit('restartWithConfirmation');
     }
 
-    keepPlaying(event: Event) {
+    keepPlaying(event: Event): void {
         event.preventDefault();
         this.emit('keepPlaying');
     }
 
-    bindButtonPress(selector: string, fn: Function) {
+    bindButtonPress(selector: string, fn: Function): void {
         const button = document.querySelector(selector);
 
         if (!button) {

@@ -1,7 +1,6 @@
-import Grid from "./Grid";
+import Grid from './Grid';
 
-export default interface GameState
-{
+export default interface GameState {
     grid?: Grid;
     moves: number;
     score: number;
