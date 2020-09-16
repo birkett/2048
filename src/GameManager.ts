@@ -5,6 +5,7 @@ import KeyboardInputManager from './KeyboardInputManager';
 import HtmlActuator from './HtmlActuator';
 import LocalStorageManager from './LocalStorageManager';
 import Position2d from './Position2d';
+import { GameConfig } from './GameConfig';
 
 interface Traversals {
     x: number[];
@@ -53,25 +54,28 @@ export default class GameManager implements GameState {
 
     score: number;
 
+    winningValue: number;
+
     constructor(
-        size: number,
+        config: GameConfig,
         InputManager: typeof KeyboardInputManager,
         Actuator: typeof HtmlActuator,
         StorageManager: typeof LocalStorageManager,
     ) {
-        this.size = size;
+        this.size = config.boardSize;
         this.inputManager = new InputManager();
         this.storageManager = new StorageManager();
         this.actuator = new Actuator();
 
-        this.startTiles = 2;
+        this.startTiles = config.startingTiles;
+        this.undoLimit = config.undoLimit;
+        this.winningValue = config.winningValue;
 
-        this.undoLimit = 5;
         this.stateHistory = [];
         this.keepPlaying = false;
         this.over = false;
         this.won = false;
-        this.grid = new Grid(4);
+        this.grid = new Grid(this.size);
         this.moves = 0;
         this.score = 0;
 
@@ -271,8 +275,7 @@ export default class GameManager implements GameState {
 
                     self.score += merged.value;
 
-                    // The mighty 2048 tile
-                    self.won = merged.value === 2048;
+                    self.won = merged.value === this.winningValue;
                 } else {
                     self.moveTile(tile, positions.farthest);
                 }
