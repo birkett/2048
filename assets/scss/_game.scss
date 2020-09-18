@@ -70,7 +70,9 @@
         color: $bright-text-color;
     }
 
-    &.game-won, &.game-over, &.restart-game {
+    &.game-won,
+    &.game-over,
+    &.restart-game {
         display: block;
     }
 

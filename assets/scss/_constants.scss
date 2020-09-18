@@ -1,6 +1,6 @@
-$field-width: 500px;
-$grid-spacing: 15px;
 $grid-row-cells: 4;
+$field-width: $grid-row-cells * 125px;
+$grid-spacing: 15px;
 $tile-size: ($field-width - $grid-spacing * ($grid-row-cells + 1)) / $grid-row-cells;
 $tile-border-radius: 3px;
 
@@ -19,7 +19,7 @@ $game-container-background: #bbada0;
 $transition-speed: 100ms;
 
 @media screen and (max-width: $mobile-threshold) {
-    $field-width: 280px;
+    $field-width: $grid-row-cells * 70px;
     $grid-spacing: 10px;
     $tile-size: ($field-width - $grid-spacing * ($grid-row-cells + 1)) / $grid-row-cells;
     $game-container-margin-top: 17px;

@@ -27,18 +27,8 @@ const MovementKeys: MappedKeyList = {
 export default class KeyboardInputManager {
     events: EventsList;
 
-    eventTouchstart: string;
-
-    eventTouchmove: string;
-
-    eventTouchend: string;
-
     constructor() {
         this.events = {};
-
-        this.eventTouchstart = 'touchstart';
-        this.eventTouchmove = 'touchmove';
-        this.eventTouchend = 'touchend';
 
         this.listen();
     }
@@ -62,15 +52,13 @@ export default class KeyboardInputManager {
     }
 
     listen(): void {
-        const self = this;
-
         document.addEventListener('keydown', (event) => {
             const modifiers = event.altKey || event.ctrlKey || event.metaKey || event.shiftKey;
             const mapped = MovementKeys[event.code];
 
             if (modifiers) {
                 if (event.code === 'KeyZ' && (event.ctrlKey || event.metaKey)) {
-                    self.undo.call(self, event);
+                    this.undo(event);
                 }
 
                 return;
@@ -78,31 +66,31 @@ export default class KeyboardInputManager {
 
             if (mapped !== undefined) {
                 event.preventDefault();
-                self.emit('move', mapped);
+                this.emit('move', mapped);
 
                 return;
             }
 
             if (event.code === 'KeyR') {
-                self.restart.call(self, event);
+                this.restart(event);
             }
 
             if (event.code === 'KeyQ' || event.code === 'PageUp') {
                 event.preventDefault();
-                self.emit('rotate', -1);
+                this.emit('rotate', -1);
             }
 
             if (event.code === 'KeyE' || event.code === 'PageDown') {
                 event.preventDefault();
-                self.emit('rotate', 1);
+                this.emit('rotate', 1);
             }
 
             if (event.code === 'KeyV') {
-                self.emit('flipX');
+                this.emit('flipX');
             }
 
             if (event.code === 'KeyH') {
-                self.emit('flipY');
+                this.emit('flipY');
             }
         });
 
@@ -118,7 +106,7 @@ export default class KeyboardInputManager {
         let touchStartClientY: number;
         const gameContainer = document.getElementsByClassName('game-container')[0];
 
-        gameContainer.addEventListener(this.eventTouchstart, (event: TouchEventInit) => {
+        gameContainer.addEventListener('touchstart', (event: TouchEventInit) => {
             if (event.touches!.length > 1 || event.targetTouches!.length > 1) {
                 return; // Ignore if touching with more than 1 finger
             }
@@ -129,11 +117,11 @@ export default class KeyboardInputManager {
             event.preventDefault();
         });
 
-        gameContainer.addEventListener(this.eventTouchmove, (event) => {
+        gameContainer.addEventListener('touchmove', (event) => {
             event.preventDefault();
         });
 
-        gameContainer.addEventListener(this.eventTouchend, (event: TouchEventInit) => {
+        gameContainer.addEventListener('touchend', (event: TouchEventInit) => {
             if (event.touches!.length > 0 || event.targetTouches!.length > 0) {
                 return; // Ignore if still touching with one or more fingers
             }
@@ -154,7 +142,7 @@ export default class KeyboardInputManager {
                     ? rightLeft
                     : upDown;
 
-                self.emit('move', data);
+                this.emit('move', data);
             }
         });
     }
@@ -187,6 +175,6 @@ export default class KeyboardInputManager {
         }
 
         button.addEventListener('click', fn.bind(this));
-        button.addEventListener(this.eventTouchend, fn.bind(this));
+        button.addEventListener('touchend', fn.bind(this));
     }
 }

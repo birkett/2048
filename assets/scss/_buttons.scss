@@ -22,14 +22,9 @@
             display: none;
         }
 
-        &.game-won {
-            a.keep-playing-button {
-                display: inline-block;
-            }
-        }
-
         &.restart-game {
-            a.confirm-button, a.cancel-button {
+            a.confirm-button,
+            a.cancel-button {
                 display: inline-block;
             }
 
@@ -37,6 +32,12 @@
                 display: none;
             }
         }
+    }
+}
+
+.game-won {
+    a.keep-playing-button {
+        display: inline-block;
     }
 }
 
