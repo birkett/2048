@@ -46,10 +46,10 @@
         margin-top: 222px;
 
         @media screen and (max-width: $mobile-threshold) {
-            font-size: 30px !important;
-            height: 30px !important;
-            line-height: 30px !important;
-            margin-top: 90px !important;
+            font-size: 30px;
+            height: 30px;
+            line-height: 30px;
+            margin-top: 90px;
         }
     }
 
@@ -58,7 +58,7 @@
         margin-top: 59px;
 
         @media screen and (max-width: $mobile-threshold) {
-            margin-top: 30px !important;
+            margin-top: 30px;
         }
     }
 

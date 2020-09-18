@@ -12,11 +12,11 @@ html {
 }
 
 body {
-    background: #faf8ef;
+    background: $body-background-color;
     color: $text-color;
     font-family: 'Helvetica Neue', Arial, sans-serif;
     font-size: 18px;
-    margin: 80px 0;
+    margin: 20px;
 
     @media screen and (max-width: $mobile-threshold) {
         font-size: 15px;
@@ -34,7 +34,7 @@ body {
 }
 
 .title {
-    font-size: 80px;
+    font-size: 64px;
     font-weight: bold;
     margin: 0;
     display: block;
