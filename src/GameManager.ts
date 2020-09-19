@@ -5,7 +5,7 @@ import KeyboardInputManager from './KeyboardInputManager';
 import HtmlActuator from './HtmlActuator';
 import LocalStorageManager from './LocalStorageManager';
 import Position2d from './Position2d';
-import { GameConfig } from './GameConfig';
+import GameConfig from './GameConfig';
 import Direction from './Direction.js';
 
 interface Traversals {
@@ -55,14 +55,14 @@ export default class GameManager implements GameState {
 
     constructor(
         config: GameConfig,
-        InputManager: typeof KeyboardInputManager,
-        Actuator: typeof HtmlActuator,
-        StorageManager: typeof LocalStorageManager,
+        inputManager: KeyboardInputManager,
+        actuator: HtmlActuator,
+        storageManager: LocalStorageManager,
     ) {
         this.size = config.boardSize;
-        this.inputManager = new InputManager();
-        this.storageManager = new StorageManager();
-        this.actuator = new Actuator();
+        this.inputManager = inputManager;
+        this.storageManager = storageManager;
+        this.actuator = actuator;
 
         this.startTiles = config.startingTiles;
         this.undoLimit = config.undoLimit;

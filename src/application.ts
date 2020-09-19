@@ -2,7 +2,7 @@ import GameManager from './GameManager.js';
 import HtmlActuator from './HtmlActuator.js';
 import KeyboardInputManager from './KeyboardInputManager.js';
 import LocalStorageManager from './LocalStorageManager.js';
-import { GameConfig } from './GameConfig';
+import GameConfig from './GameConfig';
 
 // Wait till the browser is ready to render the game (avoids glitches)
 window.requestAnimationFrame(() => {
@@ -13,7 +13,12 @@ window.requestAnimationFrame(() => {
         winningValue: 2048,
     };
 
-    const game = new GameManager(config, KeyboardInputManager, HtmlActuator, LocalStorageManager);
+    const game = new GameManager(
+        config,
+        new KeyboardInputManager(),
+        new HtmlActuator(),
+        new LocalStorageManager(),
+    );
 
     game.begin();
 });

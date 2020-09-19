@@ -1,7 +1,7 @@
 $grid-row-cells: 4;
 $field-width: $grid-row-cells * 125px;
 $grid-spacing: 5px;
-$tile-size: ($field-width - $grid-spacing * ($grid-row-cells + 1)) / $grid-row-cells;
+$tile-size: ceil(($field-width - $grid-spacing * ($grid-row-cells + 1)) / $grid-row-cells);
 $game-container-margin-top: 40px;
 
 $transition-speed: 250ms;
@@ -11,12 +11,12 @@ $mobile-threshold: $field-width + 20px;
 $tablet-threshold: 1024px;
 
 // Color palette.
-$body-background-color: #FAF8EF;
+$body-background-color: #3e3e3e;
 $text-color: #776E65;
-$bright-text-color: #F9F6F2;
+$bright-text-color: #e5dccf;
 
-$tile-color: #EEE4DA;
+$tile-color: #e3dbd4;
 $tile-gold-color: #EDC22E;
 $tile-gold-glow-color: lighten($tile-gold-color, 15%);
 
-$game-container-background: #BBADA0;
+$game-container-background: #5e5751;

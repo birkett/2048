@@ -1,125 +1,99 @@
 @import 'constants';
 
-// Exponent.
-// From: https://github.com/Team-Sass/Sassy-math/blob/master/sass/math.scss#L36
-@function exponent($base, $exponent) {
-    $value: $base;
-
-    @if $exponent > 1 {
-        @for $i from 2 through $exponent {
-            $value: $value * $base;
-        }
-    }
-
-    @if $exponent < 1 {
-        @for $i from 0 through -$exponent {
-            $value: $value / $base;
-        }
-    }
-
-    @return $value;
-}
-
 .tile-container {
     position: absolute;
     z-index: 2;
 }
 
 .tile {
-    &,
-    .tile-inner {
-        width: ceil($tile-size);
-        height: ceil($tile-size);
-        line-height: ceil($tile-size);
-    }
-
-    .tile-inner {
-        background: $tile-color;
-        text-align: center;
-        font-weight: bold;
-        z-index: 10;
-        font-size: 55px;
-    }
-
-    // Build position classes.
-    @for $x from 1 through $grid-row-cells {
-        @for $y from 1 through $grid-row-cells {
-            &.tile-position-#{$x}-#{$y} {
-                $xPos: floor(($tile-size + $grid-spacing) * ($x - 1));
-                $yPos: floor(($tile-size + $grid-spacing) * ($y - 1));
-                transform: translate($xPos, $yPos);
-            }
-        }
-    }
-
     position: absolute;
     transition: $transition-speed ease-in-out;
     transition-property: transform;
+}
 
-    // Colors for all 17 states, false = no special color.
-    $special-colors: false false,  // 2
-                     false false,  // 4
-                     #f78e48 true, // 8
-                     #fc5e2e true, // 16
-                     #ff3333 true, // 32
-                     #ff0000 true, // 64
-                     false true,   // 128
-                     false true,   // 256
-                     false true,   // 512
-                     false true,   // 1024
-                     false true,   // 2048
-                     #48f78e true, // 4096
-                     #2efc5e true, // 8192
-                     #33ff33 true, // 16384
-                     #00ff00 true, // 32768
-                     #007a7a true, // 65536
-                     #0000ff true; // 131072
+// Build position classes.
+@for $x from 1 through $grid-row-cells {
+    @for $y from 1 through $grid-row-cells {
+        .tile-position-#{$x}-#{$y} {
+            $xPos: ($tile-size + $grid-spacing) * ($x - 1);
+            $yPos: ($tile-size + $grid-spacing) * ($y - 1);
+            transform: translate($xPos, $yPos);
+        }
+    }
+}
 
-    $base: 2;
-    $exponent: 1;
-    $limit: 11;
-    $super-limit: 17;
+// Colors for all 17 states <tile value>, <colour (false = no special color)>, <bright colour>.
+$special-colors: 2      false   false,
+                 4      false   false,
+                 8      #f78e48 true,
+                 16     #fc5e2e true,
+                 32     #ff3333 true,
+                 64     #ff0000 true,
+                 128    false   true,
+                 256    false   true,
+                 512    false   true,
+                 1024   false   true,
+                 2048   false   true,
+                 4096   #48f78e true,
+                 8092   #2efc5e true,
+                 16384  #33ff33 true,
+                 32768  #00ff00 true,
+                 65536  #007a7a true,
+                 131072 #0000ff true;
 
-    // Build tile colors.
-    @while $exponent <= $super-limit {
-        $power: exponent($base, $exponent);
+$special-colors-index: 1;
+$original-colors-count: 11;
+$special-colors-count: 17;
 
-        &.tile-#{$power} .tile-inner {
-            // Calculate base background color.
-            $gold-percent: min(100, ($exponent - 1) / ($limit - 1) * 100);
-            $mixed-background: mix($tile-gold-color, $tile-color, $gold-percent);
+// Build tile colors.
+@while $special-colors-index <= $special-colors-count {
+    $nth-color: nth($special-colors, $special-colors-index);
 
-            $nth-color: nth($special-colors, $exponent);
+    $tileValue: nth($nth-color, 1);
+    $special-background: nth($nth-color, 2);
+    $bright-color: nth($nth-color, 3);
 
-            $special-background: nth($nth-color, 1);
-            $bright-color: nth($nth-color, 2);
+    .tile-#{$tileValue} .tile-inner {
+        // Calculate base background color.
+        $gold-percent: min(100, ($special-colors-index - 1) / ($original-colors-count - 1) * 100);
+        $mixed-background: mix($tile-gold-color, $tile-color, $gold-percent);
 
-            @if $special-background {
-                $mixed-background: mix($special-background, $mixed-background, 55%);
-            }
-
-            @if $bright-color {
-                color: $bright-text-color;
-            }
-
-            background: $mixed-background;
-
-            // Add glow.
-            $glow-opacity: min(max($exponent - 4, 0) / ($limit - 4), 1);
-
-            box-shadow: 0 0 30px 10px rgba($tile-gold-glow-color, $glow-opacity / 1.8),
-            inset 0 0 0 1px rgba(white, $glow-opacity / 3);
-
-            // Adjust font size for bigger numbers.
-            @if $power >= 100 and $power < 1000 {
-                font-size: 45px;
-            } @else if $power >= 1000 {
-                font-size: 35px;
-            }
+        @if $special-background {
+            $mixed-background: mix($special-background, $mixed-background, 55%);
         }
 
-        $exponent: $exponent + 1;
+        @if $bright-color {
+            color: $bright-text-color;
+        }
+
+        background: $mixed-background;
+
+        // Add glow.
+        $glow-opacity: min(max($special-colors-index - 4, 0) / ($original-colors-count - 4), 1);
+
+        box-shadow: 0 0 30px 10px rgba($tile-gold-glow-color, $glow-opacity / 1.8),
+        inset 0 0 0 1px rgba(white, $glow-opacity / 3);
+
+        // Adjust font size for bigger numbers.
+        @if $tileValue >= 100 and $tileValue < 1000 {
+            font-size: 45px;
+        } @else if $tileValue >= 1000 {
+            font-size: 35px;
+        }
     }
+
+    $special-colors-index: $special-colors-index + 1;
+}
+
+.tile-inner {
+    width: $tile-size;
+    height: $tile-size;
+    line-height: $tile-size;
+    background: $tile-color;
+    text-align: center;
+    font-weight: bold;
+    z-index: 10;
+    font-size: 55px;
 }
 
 .tile-new .tile-inner {
