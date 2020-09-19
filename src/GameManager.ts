@@ -211,7 +211,7 @@ export default class GameManager implements GameState {
     }
 
     prepareTiles(): void {
-        this.grid.eachCell((x: number, y: number, tile: Tile) => {
+        this.grid.eachCell((tile: Tile) => {
             if (!tile) {
                 return;
             }

@@ -51,7 +51,7 @@ export default class Grid implements GridSerialized {
     availableCells(): Position2d[] {
         const cells: Position2d[] = [];
 
-        this.eachCell((x: number, y: number, tile: Tile) => {
+        this.eachCell((tile: Tile, x: number, y: number) => {
             if (!tile) {
                 cells.push({ x, y });
             }
@@ -63,7 +63,7 @@ export default class Grid implements GridSerialized {
     eachCell(callback: Function): void {
         for (let x = 0; x < this.size; x += 1) {
             for (let y = 0; y < this.size; y += 1) {
-                callback(x, y, this.tiles[x][y]);
+                callback(this.tiles[x][y], x, y);
             }
         }
     }
@@ -145,7 +145,7 @@ export default class Grid implements GridSerialized {
     }
 
     updateTiles(): void {
-        this.eachCell((x: number, y: number, tile: Tile) => {
+        this.eachCell((tile: Tile, x: number, y: number) => {
             if (tile) {
                 tile.updatePosition({ x, y });
             }
