@@ -69,16 +69,6 @@
     }
 }
 
-.above-game {
-    @media screen and (max-width: $tablet-threshold) {
-        display: none;
-    }
-}
-
-.game-intro {
-    line-height: 50px;
-}
-
 .game-explanation {
     margin-top: 50px;
 }

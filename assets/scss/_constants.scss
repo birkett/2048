@@ -2,19 +2,21 @@ $grid-row-cells: 4;
 $field-width: $grid-row-cells * 125px;
 $grid-spacing: 5px;
 $tile-size: ($field-width - $grid-spacing * ($grid-row-cells + 1)) / $grid-row-cells;
+$game-container-margin-top: 40px;
 
+$transition-speed: 250ms;
+
+// Media query thresholds.
 $mobile-threshold: $field-width + 20px;
 $tablet-threshold: 1024px;
 
-$body-background-color: #faf8ef;
+// Color palette.
+$body-background-color: #FAF8EF;
 $text-color: #776E65;
-$bright-text-color: #f9f6f2;
+$bright-text-color: #F9F6F2;
 
-$tile-color: #eee4da;
-$tile-gold-color: #edc22e;
+$tile-color: #EEE4DA;
+$tile-gold-color: #EDC22E;
 $tile-gold-glow-color: lighten($tile-gold-color, 15%);
 
-$game-container-margin-top: 40px;
-$game-container-background: #bbada0;
-
-$transition-speed: 250ms;
+$game-container-background: #BBADA0;
