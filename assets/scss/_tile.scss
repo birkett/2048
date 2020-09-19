@@ -113,17 +113,8 @@
             // Adjust font size for bigger numbers.
             @if $power >= 100 and $power < 1000 {
                 font-size: 45px;
-
-                // Media queries placed here to avoid carrying over the rest of the logic.
-                @media screen and (max-width: $mobile-threshold) {
-                    font-size: 25px;
-                }
             } @else if $power >= 1000 {
                 font-size: 35px;
-
-                @media screen and (max-width: $mobile-threshold) {
-                    font-size: 15px;
-                }
             }
         }
 
@@ -134,10 +125,6 @@
 .tile-new .tile-inner {
     animation: appear 200ms ease $transition-speed;
     animation-fill-mode: backwards;
-
-    @media screen and (max-width: $mobile-threshold) {
-        font-size: 35px;
-    }
 }
 
 .tile-merged .tile-inner {

@@ -1,9 +1,10 @@
 $grid-row-cells: 4;
 $field-width: $grid-row-cells * 125px;
-$grid-spacing: 15px;
+$grid-spacing: 5px;
 $tile-size: ($field-width - $grid-spacing * ($grid-row-cells + 1)) / $grid-row-cells;
 
 $mobile-threshold: $field-width + 20px;
+$tablet-threshold: 1024px;
 
 $body-background-color: #faf8ef;
 $text-color: #776E65;
@@ -16,19 +17,4 @@ $tile-gold-glow-color: lighten($tile-gold-color, 15%);
 $game-container-margin-top: 40px;
 $game-container-background: #bbada0;
 
-$transition-speed: 100ms;
-
-@media screen and (max-width: $mobile-threshold) {
-    $field-width: $grid-row-cells * 70px;
-    $grid-spacing: 10px;
-    $tile-size: ($field-width - $grid-spacing * ($grid-row-cells + 1)) / $grid-row-cells;
-    $game-container-margin-top: 17px;
-}
-
-@mixin clearfix {
-    &:after {
-        content: '';
-        display: block;
-        clear: both;
-    }
-}
+$transition-speed: 250ms;

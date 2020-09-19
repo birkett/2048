@@ -6,6 +6,21 @@
         {% include './common/headMeta.html.njk' %}
     </head>
     <body>
+        <div class="header-bar">
+            <h1 class="title">2048</h1>
+            <div class="above-game">
+                <p class="game-intro">Join the numbers and get to the <strong>2048 tile!</strong></p>
+            </div>
+
+            <div class="scores-container">
+                <a class="restart-button">New Game</a>
+
+                <div class="moves-container">0</div>
+                <div class="score-container">0</div>
+                <div class="best-container">0</div>
+            </div>
+        </div>
+
         {% include './common/gameContainer.html.njk' %}
 
         <script type="module" src="../js/application.js?v={{ constants.gitRevision() }}"></script>

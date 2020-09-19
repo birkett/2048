@@ -3,11 +3,6 @@
 .container {
     width: $field-width;
     margin: 0 auto;
-
-    @media screen and (max-width: $mobile-threshold) {
-        width: $field-width;
-        margin: 0 auto;
-    }
 }
 
 .game-container {
@@ -43,22 +38,11 @@
         height: 60px;
         line-height: 60px;
         margin-top: 222px;
-
-        @media screen and (max-width: $mobile-threshold) {
-            font-size: 30px;
-            height: 30px;
-            line-height: 30px;
-            margin-top: 90px;
-        }
     }
 
     .lower {
         display: block;
         margin-top: 59px;
-
-        @media screen and (max-width: $mobile-threshold) {
-            margin-top: 30px;
-        }
     }
 
     animation: fade-in 800ms ease $transition-speed * 12;
@@ -86,20 +70,13 @@
 }
 
 .above-game {
-    @include clearfix;
+    @media screen and (max-width: $tablet-threshold) {
+        display: none;
+    }
 }
 
 .game-intro {
-    float: left;
-    line-height: 42px;
-    margin-bottom: 0;
-
-    @media screen and (max-width: $mobile-threshold) {
-        width: 55%;
-        display: block;
-        box-sizing: border-box;
-        line-height: 1.65;
-    }
+    line-height: 50px;
 }
 
 .game-explanation {

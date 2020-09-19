@@ -43,15 +43,7 @@
 .restart-button {
     @include button;
 
-    display: block;
-    text-align: center;
-    float: right;
-
-    @media screen and (max-width: $mobile-threshold) {
-        width: 42%;
-        padding: 0;
-        display: block;
-        box-sizing: border-box;
-        margin-top: 2px;
-    }
+    line-height: 50px;
+    height: auto;
+    min-width: 95px;
 }
