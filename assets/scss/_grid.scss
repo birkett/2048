@@ -24,9 +24,6 @@
     height: $tile-size;
     margin-right: $grid-spacing;
     float: left;
-
-    border-radius: $tile-border-radius;
-
     background: rgba($tile-color, .35);
 
     &:last-child {
