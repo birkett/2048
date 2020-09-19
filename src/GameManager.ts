@@ -275,7 +275,7 @@ export default class GameManager implements GameState {
 
                     self.score += merged.value;
 
-                    self.won = merged.value === this.winningValue;
+                    self.won = self.won || merged.value === this.winningValue;
                 } else {
                     self.moveTile(tile, positions.farthest);
                 }
