@@ -6,24 +6,21 @@ import HtmlActuator from './HtmlActuator';
 import LocalStorageManager from './LocalStorageManager';
 import Position2d from './Position2d';
 import { GameConfig } from './GameConfig';
+import Direction from './Direction.js';
 
 interface Traversals {
     x: number[];
     y: number[];
 }
 
-interface VectorMap {
-    [index: string]: Position2d;
-}
-
-const VECTOR_MAP: VectorMap = {
-    Up: { x: 0, y: -1 },
-    Right: { x: 1, y: 0 },
-    Down: { x: 0, y: 1 },
-    Left: { x: -1, y: 0 },
+const VECTOR_MAP: Record<Direction, Position2d> = {
+    [Direction.Up]: { x: 0, y: -1 },
+    [Direction.Right]: { x: 1, y: 0 },
+    [Direction.Down]: { x: 0, y: 1 },
+    [Direction.Left]: { x: -1, y: 0 },
 };
 
-const getVector = (direction: string): Position2d => VECTOR_MAP[direction];
+const getVector = (direction: Direction): Position2d => VECTOR_MAP[direction];
 
 const positionsEqual = (a: Position2d, b: Position2d): boolean => a.x === b.x && a.y === b.y;
 
@@ -231,7 +228,7 @@ export default class GameManager implements GameState {
         tile.updatePosition(position);
     }
 
-    move(direction: string): void {
+    move(direction: Direction): void {
         const self = this;
 
         if (this.isGameTerminated()) {
@@ -306,7 +303,7 @@ export default class GameManager implements GameState {
         this.actuate();
     }
 
-    rotate(n: number): void {
+    rotate(n: Direction): void {
         if (this.over) {
             return;
         }
@@ -390,7 +387,7 @@ export default class GameManager implements GameState {
                     continue;
                 }
 
-                const keys = Object.keys(VECTOR_MAP);
+                const keys = <Direction[]>Object.keys(VECTOR_MAP);
 
                 for (let i = 0; i < keys.length; i += 1) {
                     const vector = getVector(keys[i]);

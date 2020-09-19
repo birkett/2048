@@ -1,5 +1,6 @@
 import Tile from './Tile.js';
 import Position2d from './Position2d';
+import Direction from './Direction.js';
 
 type NullableTile = Tile | null;
 type TileArray = NullableTile[][];
@@ -114,37 +115,28 @@ export default class Grid implements GridSerialized {
         this.tiles = newCells;
     }
 
-    flipX(hold?: boolean): void {
+    flipX(): void {
         this.tiles = this.tiles.reverse();
 
-        if (!hold) {
-            this.updateTiles();
-        }
+        this.updateTiles();
     }
 
-    flipY(hold?: boolean): void {
+    flipY(): void {
         this.tiles = this.tiles.map((row) => row.reverse());
 
-        if (!hold) {
-            this.updateTiles();
-        }
+        this.updateTiles();
     }
 
-    rotate(n: number): void {
-        switch (((n % this.size) + this.size) % this.size) {
-            case 1:
+    rotate(direction: Direction): void {
+        switch (direction) {
+            case Direction.Left:
+                this.transpose();
+                this.flipY();
+
+                break;
+            case Direction.Right:
                 this.transpose();
                 this.flipX();
-
-                break;
-            case 2:
-                this.flipX(true);
-                this.flipY();
-
-                break;
-            case 3:
-                this.transpose();
-                this.flipY();
 
                 break;
             default:

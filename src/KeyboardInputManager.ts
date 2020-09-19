@@ -1,9 +1,7 @@
+import Direction from './Direction.js';
+
 interface EventsList {
     [index: string]: Function[];
-}
-
-interface MappedKeyList {
-    [index: string]: string;
 }
 
 interface TouchEventInit extends EventModifierInit {
@@ -13,15 +11,15 @@ interface TouchEventInit extends EventModifierInit {
     preventDefault: Function;
 }
 
-const MovementKeys: MappedKeyList = {
-    ArrowUp: 'Up',
-    ArrowRight: 'Right',
-    ArrowDown: 'Down',
-    ArrowLeft: 'Left',
-    KeyW: 'Up',
-    KeyD: 'Right',
-    KeyS: 'Down',
-    KeyA: 'Left',
+const MovementKeys: Record<string, Direction> = {
+    ArrowUp: Direction.Up,
+    ArrowRight: Direction.Right,
+    ArrowDown: Direction.Down,
+    ArrowLeft: Direction.Left,
+    KeyW: Direction.Up,
+    KeyD: Direction.Right,
+    KeyS: Direction.Down,
+    KeyA: Direction.Left,
 };
 
 export default class KeyboardInputManager {
@@ -77,12 +75,12 @@ export default class KeyboardInputManager {
 
             if (event.code === 'KeyQ' || event.code === 'PageUp') {
                 event.preventDefault();
-                this.emit('rotate', -1);
+                this.emit('rotate', Direction.Left);
             }
 
             if (event.code === 'KeyE' || event.code === 'PageDown') {
                 event.preventDefault();
-                this.emit('rotate', 1);
+                this.emit('rotate', Direction.Right);
             }
 
             if (event.code === 'KeyV') {
@@ -107,12 +105,18 @@ export default class KeyboardInputManager {
         const gameContainer = document.getElementsByClassName('game-container')[0];
 
         gameContainer.addEventListener('touchstart', (event: TouchEventInit) => {
-            if (event.touches!.length > 1 || event.targetTouches!.length > 1) {
+            if ((event.touches && event.touches.length > 1)
+                || (event.targetTouches && event.targetTouches.length > 1)
+            ) {
                 return; // Ignore if touching with more than 1 finger
             }
 
-            touchStartClientX = event.touches![0].clientX;
-            touchStartClientY = event.touches![0].clientY;
+            if (!event.touches) {
+                return;
+            }
+
+            touchStartClientX = event.touches[0].clientX;
+            touchStartClientY = event.touches[0].clientY;
 
             event.preventDefault();
         });
@@ -122,12 +126,17 @@ export default class KeyboardInputManager {
         });
 
         gameContainer.addEventListener('touchend', (event: TouchEventInit) => {
-            if (event.touches!.length > 0 || event.targetTouches!.length > 0) {
+            if ((event.touches && event.touches.length > 0)
+                || (event.targetTouches && event.targetTouches.length > 0)) {
                 return; // Ignore if still touching with one or more fingers
             }
 
-            const touchEndClientX = event.changedTouches![0].clientX;
-            const touchEndClientY = event.changedTouches![0].clientY;
+            if (!event.changedTouches) {
+                return;
+            }
+
+            const touchEndClientX = event.changedTouches[0].clientX;
+            const touchEndClientY = event.changedTouches[0].clientY;
 
             const dx = touchEndClientX - touchStartClientX;
             const absDx = Math.abs(dx);
@@ -136,8 +145,8 @@ export default class KeyboardInputManager {
             const absDy = Math.abs(dy);
 
             if (Math.max(absDx, absDy) > 10) {
-                const rightLeft = (dx > 0 ? 'Right' : 'Left');
-                const upDown = (dy > 0 ? 'Down' : 'Up');
+                const rightLeft = (dx > 0 ? Direction.Right : Direction.Left);
+                const upDown = (dy > 0 ? Direction.Down : Direction.Up);
                 const data = absDx > absDy
                     ? rightLeft
                     : upDown;
