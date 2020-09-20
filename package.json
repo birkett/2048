@@ -22,7 +22,7 @@
     "cloc": "cloc assets/ build/ lib/ src/ build.js tests.js",
     "lint": "eslint . --ext .js,.ts",
     "lint:fix": "eslint . --ext .js,.ts --fix",
-    "build": "set -e && node build.js && tsc",
+    "build": "set -e && node build.js && tsc && tsc --project src/workers/tsconfig.json",
     "test": "node tests.js"
   },
   "author": "Anthony Birkett",

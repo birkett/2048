@@ -2,8 +2,8 @@
   "compilerOptions": {
     "target": "ES2020",
     "module": "es2020",
+    "rootDir": "./src/game",
     "outDir": "./dist/js",
-    "rootDir": "./src",
     "removeComments": true,
 
     "strict": true,
@@ -25,5 +25,5 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*", "test/**/*", "lib/**.*", "tests.js", "build.js", ".eslintrc.js"]
+  "include": ["src/game/*", "test/**/*", "lib/**.*", "tests.js", "build.js", ".eslintrc.js"]
 }
