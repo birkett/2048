@@ -23,7 +23,7 @@ const MovementKeys: Record<string, Direction> = {
 };
 
 export default class KeyboardInputManager {
-    events: EventsList;
+    private readonly events: EventsList;
 
     constructor() {
         this.events = {};
@@ -31,7 +31,7 @@ export default class KeyboardInputManager {
         this.listen();
     }
 
-    on(event: string, callback: Function): void {
+    public on(event: string, callback: Function): void {
         if (!this.events[event]) {
             this.events[event] = [];
         }
@@ -39,7 +39,7 @@ export default class KeyboardInputManager {
         this.events[event].push(callback);
     }
 
-    emit(event: string, data?: string | number): void {
+    private emit(event: string, data?: string | number): void {
         const callbacks = this.events[event];
 
         if (callbacks) {
@@ -49,7 +49,7 @@ export default class KeyboardInputManager {
         }
     }
 
-    listen(): void {
+    private listen(): void {
         document.addEventListener('keydown', (event) => {
             const modifiers = event.altKey || event.ctrlKey || event.metaKey || event.shiftKey;
             const mapped = MovementKeys[event.code];
@@ -121,7 +121,7 @@ export default class KeyboardInputManager {
             event.preventDefault();
         });
 
-        gameContainer.addEventListener('touchmove', (event) => {
+        gameContainer.addEventListener('touchmove', (event: Event) => {
             event.preventDefault();
         });
 
@@ -156,27 +156,27 @@ export default class KeyboardInputManager {
         });
     }
 
-    restart(event: Event): void {
+    private restart(event: Event): void {
         event.preventDefault();
         this.emit('restart');
     }
 
-    undo(event: Event): void {
+    private undo(event: Event): void {
         event.preventDefault();
         this.emit('undo');
     }
 
-    restartWithConfirmation(event: Event): void {
+    private restartWithConfirmation(event: Event): void {
         event.preventDefault();
         this.emit('restartWithConfirmation');
     }
 
-    keepPlaying(event: Event): void {
+    private keepPlaying(event: Event): void {
         event.preventDefault();
         this.emit('keepPlaying');
     }
 
-    bindButtonPress(selector: string, fn: Function): void {
+    private bindButtonPress(selector: string, fn: Function): void {
         const button = document.querySelector(selector);
 
         if (!button) {

@@ -25,33 +25,33 @@ const getVector = (direction: Direction): Position2d => VECTOR_MAP[direction];
 const positionsEqual = (a: Position2d, b: Position2d): boolean => a.x === b.x && a.y === b.y;
 
 export default class GameManager implements GameState {
-    size: number;
+    public keepPlaying: boolean;
 
-    inputManager: KeyboardInputManager;
+    public over: boolean;
 
-    storageManager: LocalStorageManager;
+    public won: boolean;
 
-    actuator: HtmlActuator;
+    public grid: Grid;
 
-    startTiles: number;
+    public moves: number;
 
-    undoLimit: number;
+    public score: number;
 
-    stateHistory: GameState[];
+    private readonly size: number;
 
-    keepPlaying: boolean;
+    private inputManager: KeyboardInputManager;
 
-    over: boolean;
+    private storageManager: LocalStorageManager;
 
-    won: boolean;
+    private actuator: HtmlActuator;
 
-    grid: Grid;
+    private readonly startTiles: number;
 
-    moves: number;
+    private readonly undoLimit: number;
 
-    score: number;
+    private stateHistory: GameState[];
 
-    winningValue: number;
+    private readonly winningValue: number;
 
     constructor(
         config: GameConfig,
@@ -88,27 +88,27 @@ export default class GameManager implements GameState {
         this.setup();
     }
 
-    begin(): void {
+    public begin(): void {
         this.actuate();
     }
 
-    restart(): void {
+    private restart(): void {
         this.storageManager.clearGameState();
         this.actuator.continueGame();
         this.setup();
         this.begin();
     }
 
-    restartWithConfirmation(): void {
+    private restartWithConfirmation(): void {
         this.actuator.promptRestart();
     }
 
-    keepPlayingListener(): void {
+    private keepPlayingListener(): void {
         this.keepPlaying = true;
         this.actuator.continueGame();
     }
 
-    undo(): void {
+    private undo(): void {
         if (!this.stateHistory || !this.stateHistory.length) {
             return;
         }
@@ -124,11 +124,11 @@ export default class GameManager implements GameState {
         this.actuate();
     }
 
-    isGameTerminated(): boolean {
+    private isGameTerminated(): boolean {
         return this.over || (this.won && !this.keepPlaying);
     }
 
-    setup(): void {
+    private setup(): void {
         this.actuator.buildHTMLGrid(this.size);
 
         const previousState = this.storageManager.getGameState();
@@ -141,7 +141,7 @@ export default class GameManager implements GameState {
         }
     }
 
-    createNewState(): void {
+    private createNewState(): void {
         this.grid = new Grid(this.size);
         this.moves = -1;
         this.score = 0;
@@ -152,7 +152,7 @@ export default class GameManager implements GameState {
         this.addStartTiles();
     }
 
-    loadFromPreviousState(previousState: GameState): void {
+    private loadFromPreviousState(previousState: GameState): void {
         this.grid = new Grid(previousState.grid!.size, previousState.grid!.tiles);
         this.moves = previousState.moves;
         this.score = previousState.score;
@@ -161,13 +161,13 @@ export default class GameManager implements GameState {
         this.keepPlaying = previousState.keepPlaying!;
     }
 
-    addStartTiles(): void {
+    private addStartTiles(): void {
         for (let i = 0; i < this.startTiles; i += 1) {
             this.addRandomTile();
         }
     }
 
-    addRandomTile(): void {
+    private addRandomTile(): void {
         if (!this.grid.cellsAvailable()) {
             return;
         }
@@ -178,7 +178,7 @@ export default class GameManager implements GameState {
         this.grid.insertTile(tile);
     }
 
-    actuate(): void {
+    private actuate(): void {
         if (this.storageManager.getBestScore() < this.score) {
             this.storageManager.setBestScore(this.score);
         }
@@ -199,7 +199,7 @@ export default class GameManager implements GameState {
         });
     }
 
-    serialize(): GameState {
+    private serialize(): GameState {
         return {
             grid: this.grid.serialize(),
             moves: this.moves,
@@ -210,7 +210,7 @@ export default class GameManager implements GameState {
         };
     }
 
-    prepareTiles(): void {
+    private prepareTiles(): void {
         this.grid.eachCell((tile: Tile) => {
             if (!tile) {
                 return;
@@ -221,14 +221,14 @@ export default class GameManager implements GameState {
         });
     }
 
-    moveTile(tile: Tile, position: Position2d): void {
+    private moveTile(tile: Tile, position: Position2d): void {
         this.grid.setTile(tile.position, null);
         this.grid.setTile(position, tile);
 
         tile.updatePosition(position);
     }
 
-    move(direction: Direction): void {
+    private move(direction: Direction): void {
         const self = this;
 
         if (this.isGameTerminated()) {
@@ -303,7 +303,7 @@ export default class GameManager implements GameState {
         this.actuate();
     }
 
-    rotate(n: Direction): void {
+    private rotate(n: Direction): void {
         if (this.over) {
             return;
         }
@@ -313,7 +313,7 @@ export default class GameManager implements GameState {
         this.actuate();
     }
 
-    flipX(): void {
+    private flipX(): void {
         if (this.over) {
             return;
         }
@@ -323,7 +323,7 @@ export default class GameManager implements GameState {
         this.actuate();
     }
 
-    flipY(): void {
+    private flipY(): void {
         if (this.over) {
             return;
         }
@@ -333,7 +333,7 @@ export default class GameManager implements GameState {
         this.actuate();
     }
 
-    buildTraversals(vector: Position2d): Traversals {
+    private buildTraversals(vector: Position2d): Traversals {
         const traversals: Traversals = { x: [], y: [] };
 
         for (let pos = 0; pos < this.size; pos += 1) {
@@ -353,7 +353,7 @@ export default class GameManager implements GameState {
         return traversals;
     }
 
-    findFarthestPosition(cell: Position2d, vector: Position2d) {
+    private findFarthestPosition(cell: Position2d, vector: Position2d) {
         let previous;
 
         // Progress towards the vector direction until an obstacle is found
@@ -370,11 +370,11 @@ export default class GameManager implements GameState {
         };
     }
 
-    movesAvailable(): boolean {
+    private movesAvailable(): boolean {
         return this.grid.cellsAvailable() || this.tileMatchesAvailable();
     }
 
-    tileMatchesAvailable(): boolean {
+    private tileMatchesAvailable(): boolean {
         const self = this;
 
         let tile;

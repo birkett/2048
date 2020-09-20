@@ -16,19 +16,19 @@ const applyClasses = (element: Element, classes: string[]): void => {
 const positionClass = (pos: Position2d): string => `tile-position-${pos.x + 1}-${pos.y + 1}`;
 
 export default class HtmlActuator {
-    tileContainer: Element;
+    private readonly tileContainer: Element;
 
-    movesContainer: Element;
+    private readonly movesContainer: Element;
 
-    scoreContainer: Element;
+    private readonly scoreContainer: Element;
 
-    bestContainer: Element;
+    private readonly bestContainer: Element;
 
-    messageContainer: Element;
+    private readonly messageContainer: Element;
 
-    gridContainer: Element;
+    private readonly gridContainer: Element;
 
-    score: number;
+    private score: number;
 
     constructor() {
         this.tileContainer = document.querySelector('.tile-container')!;
@@ -48,7 +48,7 @@ export default class HtmlActuator {
         }
     }
 
-    buildHTMLGrid(size: number): void {
+    public buildHTMLGrid(size: number): void {
         if (this.gridContainer.children.length >= size) {
             return;
         }
@@ -70,7 +70,7 @@ export default class HtmlActuator {
         }
     }
 
-    actuate(grid: Grid, metadata: GameState): void {
+    public actuate(grid: Grid, metadata: GameState): void {
         const self = this;
 
         window.requestAnimationFrame(() => {
@@ -98,11 +98,18 @@ export default class HtmlActuator {
         });
     }
 
-    continueGame(): void {
+    public continueGame(): void {
         this.clearMessage();
     }
 
-    addTile(tile: Tile): void {
+    public promptRestart(): void {
+        const message = 'Start a new game?';
+
+        this.messageContainer.classList.add('restart-game');
+        this.messageContainer.getElementsByTagName('p')[0].textContent = message;
+    }
+
+    private addTile(tile: Tile): void {
         const self = this;
 
         const wrapper = document.createElement('div');
@@ -144,11 +151,11 @@ export default class HtmlActuator {
         this.tileContainer.appendChild(wrapper);
     }
 
-    updateMoves(moves: number): void {
+    private updateMoves(moves: number): void {
         this.movesContainer.textContent = moves.toString();
     }
 
-    updateScore(score: number): void {
+    private updateScore(score: number): void {
         clearContainer(this.scoreContainer);
 
         const difference = score - this.score;
@@ -165,11 +172,11 @@ export default class HtmlActuator {
         }
     }
 
-    updateBestScore(bestScore: number): void {
+    private updateBestScore(bestScore: number): void {
         this.bestContainer.textContent = bestScore.toString();
     }
 
-    message(won: boolean): void {
+    private message(won: boolean): void {
         const type = won ? 'game-won' : 'game-over';
         const message = won ? 'You win!' : 'Game over!';
 
@@ -177,14 +184,7 @@ export default class HtmlActuator {
         this.messageContainer.getElementsByTagName('p')[0].textContent = message;
     }
 
-    promptRestart(): void {
-        const message = 'Start a new game?';
-
-        this.messageContainer.classList.add('restart-game');
-        this.messageContainer.getElementsByTagName('p')[0].textContent = message;
-    }
-
-    clearMessage(): void {
+    private clearMessage(): void {
         // IE only takes one value to remove at a time.
         this.messageContainer.classList.remove('game-won');
         this.messageContainer.classList.remove('game-over');

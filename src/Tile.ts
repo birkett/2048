@@ -6,13 +6,13 @@ interface TileSerialized {
 }
 
 export default class Tile implements TileSerialized {
-    position: Position2d;
+    public position: Position2d;
 
-    value: number;
+    public value: number;
 
-    previousPosition: Position2d | null;
+    public previousPosition: Position2d | null;
 
-    mergedFrom: Tile[] | null;
+    public mergedFrom: Tile[] | null;
 
     constructor(position: Position2d, value: number) {
         this.position = position;
@@ -22,19 +22,19 @@ export default class Tile implements TileSerialized {
         this.mergedFrom = null; // Tracks tiles that merged together
     }
 
-    setMergedFrom(value: Tile[] | null): void {
+    public setMergedFrom(value: Tile[] | null): void {
         this.mergedFrom = value;
     }
 
-    savePosition(): void {
+    public savePosition(): void {
         this.previousPosition = this.position;
     }
 
-    updatePosition(position: Position2d): void {
+    public updatePosition(position: Position2d): void {
         this.position = position;
     }
 
-    serialize(): TileSerialized {
+    public serialize(): TileSerialized {
         return {
             position: this.position,
             value: this.value,
